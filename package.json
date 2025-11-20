@@ -1,0 +1,17 @@
+{
+  "name": "taleweaver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently \"pnpm --filter backend run start:dev\" \"pnpm --filter frontend run dev\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.23.0",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
