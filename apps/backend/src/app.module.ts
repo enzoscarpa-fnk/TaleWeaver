@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { PrismaModule } from './prisma/prisma.module';
 import { OpenRouterModule } from './openrouter/openrouter.module';
 
 @Module({
@@ -8,6 +9,7 @@ import { OpenRouterModule } from './openrouter/openrouter.module';
             isGlobal: true,
             envFilePath: '.env',
         }),
+        PrismaModule,
         OpenRouterModule,
     ],
 })
