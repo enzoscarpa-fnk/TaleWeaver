@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useChat } from '../hooks/useChat.ts';
+import { useChat } from '../hooks/useChat';
+import { Link } from 'react-router-dom';
 
 export const Chat: React.FC = () => {
     const [input, setInput] = useState('');
@@ -25,9 +26,18 @@ export const Chat: React.FC = () => {
     return (
         <div className="flex flex-col h-screen bg-gray-900 text-white">
             {/* Header */}
-            <div className="bg-gray-800 p-4 border-b border-gray-700">
-                <h1 className="text-2xl font-bold">TaleWeaver AI Chat</h1>
-                <p className="text-sm text-gray-400">Modèle: GPT-4o Mini</p>
+            <div className="bg-gray-800 p-4 border-b border-gray-700 flex items-center justify-between">
+                <div>
+                    <h1 className="text-2xl font-bold">TaleWeaver AI Chat</h1>
+                    <p className="text-sm text-gray-400">Modèle: GPT-4o Mini</p>
+                </div>
+                <Link
+                    to="/dashboard"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+                >
+                    <span>📊</span>
+                    Dashboard
+                </Link>
             </div>
 
             {/* Messages */}

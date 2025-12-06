@@ -19,4 +19,8 @@ export class ChatCompletionDto {
     @IsOptional()
     @IsString()
     model?: string;
+
+    @IsOptional()
+    @IsString()
+    sessionId?: string; // Ajouter sessionId
 }
