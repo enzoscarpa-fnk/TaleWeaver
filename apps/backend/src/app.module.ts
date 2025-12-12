@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { OpenRouterModule } from './openrouter/openrouter.module';
+import { ConversationsModule } from './conversations/conversations.module';
 
 @Module({
     imports: [
@@ -11,6 +12,7 @@ import { OpenRouterModule } from './openrouter/openrouter.module';
         }),
         PrismaModule,
         OpenRouterModule,
+        ConversationsModule,
     ],
 })
 export class AppModule {}
