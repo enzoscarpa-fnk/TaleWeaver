@@ -4,7 +4,6 @@ export const GameInfo: React.FC = () => {
     return (
         <div className="h-full bg-gray-900 overflow-y-auto p-4">
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-                <span>ℹ️</span>
                 Game Information
             </h2>
 

@@ -27,7 +27,7 @@ export const PlayerPanel: React.FC = () => {
                             : 'text-gray-400 hover:text-white hover:bg-gray-800'
                     }`}
                 >
-                    👤 Stats
+                    Stats
                 </button>
                 <button
                     onClick={() => setActiveTab('inventory')}
@@ -37,7 +37,7 @@ export const PlayerPanel: React.FC = () => {
                             : 'text-gray-400 hover:text-white hover:bg-gray-800'
                     }`}
                 >
-                    🎒 Bag
+                    Bag
                 </button>
             </div>
 
@@ -97,7 +97,7 @@ const PlayerStats: React.FC<{ characterId: string | null }> = ({ characterId }) 
                 <h4 className="font-semibold text-sm mb-2 text-gray-300">Statistiques</h4>
                 <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                        <span className="text-gray-400">❤️ HP</span>
+                        <span className="text-gray-400">HP</span>
                         <span className="font-medium">
                             {character.health} / {character.maxHealth}
                         </span>
@@ -110,7 +110,7 @@ const PlayerStats: React.FC<{ characterId: string | null }> = ({ characterId }) 
                     </div>
 
                     <div className="flex justify-between">
-                        <span className="text-gray-400">⚡ Mana</span>
+                        <span className="text-gray-400">Mana</span>
                         <span className="font-medium text-blue-400">
                             {character.mana} / {character.maxMana}
                         </span>
@@ -123,7 +123,7 @@ const PlayerStats: React.FC<{ characterId: string | null }> = ({ characterId }) 
                     </div>
 
                     <div className="flex justify-between">
-                        <span className="text-gray-400">⭐ XP</span>
+                        <span className="text-gray-400">XP</span>
                         <span className="font-medium text-yellow-400">{character.experience} / 100</span>
                     </div>
                 </div>
@@ -134,15 +134,15 @@ const PlayerStats: React.FC<{ characterId: string | null }> = ({ characterId }) 
                 <h4 className="font-semibold text-sm mb-2 text-gray-300">Attributs</h4>
                 <div className="space-y-1.5 text-sm">
                     <div className="flex justify-between">
-                        <span className="text-gray-400">💪 Force</span>
+                        <span className="text-gray-400">Force</span>
                         <span>{character.strength}</span>
                     </div>
                     <div className="flex justify-between">
-                        <span className="text-gray-400">🏃 Agilité</span>
+                        <span className="text-gray-400">Agilité</span>
                         <span>{character.agility}</span>
                     </div>
                     <div className="flex justify-between">
-                        <span className="text-gray-400">🧠 Intelligence</span>
+                        <span className="text-gray-400">Intelligence</span>
                         <span>{character.intelligence}</span>
                     </div>
                 </div>
