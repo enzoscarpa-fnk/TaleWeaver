@@ -4,22 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e3a03b48-8e41-48b3-8ed7-33f1ad118e06" name="Changes" comment="Added conversation record and hydration">
-      <change afterPath="$PROJECT_DIR$/apps/backend/src/characters/characters.controller.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/backend/src/characters/characters.service.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/backend/src/characters/dto/create-character.dto.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/backend/src/characters/dto/update-character.dto.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/frontend/src/hooks/useCharacter.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/frontend/src/services/character.service.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/frontend/src/vite-env.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/backend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/backend/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/prisma/schema.prisma" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/backend/src/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/main.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/frontend/src/components/PlayerPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/frontend/src/components/PlayerPanel.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
-    </list>
+    <list default="true" id="e3a03b48-8e41-48b3-8ed7-33f1ad118e06" name="Changes" comment="Added Character to prisma schema + CRUD API" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -63,23 +48,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "features/character-crud-system",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
-    "ts.external.directory.path": "/Users/fnk/WebstormProjects/taleweaver/apps/backend/node_modules/typescript/lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;features/character-crud-system&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/fnk/WebstormProjects/taleweaver/apps/backend/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/apps/frontend/src" />
@@ -107,6 +92,7 @@
       <workItem from="1764177717936" duration="10785000" />
       <workItem from="1764773962518" duration="13982000" />
       <workItem from="1765464125982" duration="24538000" />
+      <workItem from="1765646715103" duration="473000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />
@@ -156,7 +142,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765530204901</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Added Character to prisma schema + CRUD API">
+      <option name="closed" value="true" />
+      <created>1765646896406</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1765646896406</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -196,6 +190,7 @@
     <MESSAGE value="Added dashboard to track costs" />
     <MESSAGE value="Added basic UI" />
     <MESSAGE value="Added conversation record and hydration" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added conversation record and hydration" />
+    <MESSAGE value="Added Character to prisma schema + CRUD API" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added Character to prisma schema + CRUD API" />
   </component>
 </project>
