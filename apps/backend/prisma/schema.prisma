@@ -53,3 +53,25 @@ model UsageStats {
   @@unique([userId, date, model])
   @@index([userId, date])
 }
+
+model Character {
+  id         String @id @default(cuid())
+  name       String
+  class      String
+  level      Int    @default(1)
+  experience Int    @default(0)
+
+  health       Int @default(100)
+  maxHealth    Int @default(100)
+  mana         Int @default(50)
+  maxMana      Int @default(50)
+  strength     Int @default(10)
+  intelligence Int @default(10)
+  agility      Int @default(10)
+
+  backstory String?
+  avatar    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

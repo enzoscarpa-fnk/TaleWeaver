@@ -1,7 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useCharacter } from '../hooks/useCharacter';
+import { characterService } from '../services/character.service';
 
 export const PlayerPanel: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'stats' | 'inventory'>('stats');
+    const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(null);
+
+    // Récupère le premier personnage au chargement
+    useEffect(() => {
+        characterService.getAll().then(characters => {
+            if (characters.length > 0) {
+                setSelectedCharacterId(characters[0].id);
+            }
+        });
+    }, []);
 
     return (
         <div className="h-full flex flex-col bg-gray-900">
@@ -31,24 +43,53 @@ export const PlayerPanel: React.FC = () => {
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto">
-                {activeTab === 'stats' && <PlayerStats />}
+                {activeTab === 'stats' && <PlayerStats characterId={selectedCharacterId} />}
                 {activeTab === 'inventory' && <PlayerInventory />}
             </div>
         </div>
     );
 };
 
-// Composant Stats
-const PlayerStats: React.FC = () => {
+// Composant Stats connecté à la DB
+const PlayerStats: React.FC<{ characterId: string | null }> = ({ characterId }) => {
+    const { character, loading, error } = useCharacter(characterId || undefined);
+
+    if (loading) {
+        return (
+            <div className="p-4 flex items-center justify-center">
+                <div className="animate-pulse text-gray-400">Chargement...</div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="p-4 text-center text-red-400">
+                <p>Erreur: {error.message}</p>
+            </div>
+        );
+    }
+
+    if (!character) {
+        return (
+            <div className="p-4 text-center text-gray-400">
+                <p>Aucun personnage trouvé</p>
+                <p className="text-xs mt-2">Créez votre premier personnage!</p>
+            </div>
+        );
+    }
+
     return (
         <div className="p-4 space-y-4">
             {/* Avatar + Nom */}
             <div className="text-center">
                 <div className="w-20 h-20 bg-gray-700 rounded-full mx-auto mb-3 flex items-center justify-center text-4xl">
-                    🧙‍♂️
+                    {character.avatar || '🧙‍♂️'}
                 </div>
-                <h3 className="font-bold text-lg">Nom du Héros</h3>
-                <p className="text-sm text-gray-400">Mage • Niveau 1</p>
+                <h3 className="font-bold text-lg">{character.name}</h3>
+                <p className="text-sm text-gray-400">
+                    {character.class} • Niveau {character.level}
+                </p>
             </div>
 
             {/* Stats principales */}
@@ -57,15 +98,33 @@ const PlayerStats: React.FC = () => {
                 <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                         <span className="text-gray-400">❤️ HP</span>
-                        <span className="font-medium">20 / 20</span>
+                        <span className="font-medium">
+                            {character.health} / {character.maxHealth}
+                        </span>
                     </div>
+                    <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
+                        <div
+                            className="bg-red-500 h-2 rounded-full transition-all"
+                            style={{ width: `${(character.health / character.maxHealth) * 100}%` }}
+                        />
+                    </div>
+
                     <div className="flex justify-between">
                         <span className="text-gray-400">⚡ Mana</span>
-                        <span className="font-medium text-blue-400">15 / 15</span>
+                        <span className="font-medium text-blue-400">
+                            {character.mana} / {character.maxMana}
+                        </span>
                     </div>
+                    <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
+                        <div
+                            className="bg-blue-500 h-2 rounded-full transition-all"
+                            style={{ width: `${(character.mana / character.maxMana) * 100}%` }}
+                        />
+                    </div>
+
                     <div className="flex justify-between">
                         <span className="text-gray-400">⭐ XP</span>
-                        <span className="font-medium text-yellow-400">0 / 100</span>
+                        <span className="font-medium text-yellow-400">{character.experience} / 100</span>
                     </div>
                 </div>
             </div>
@@ -76,29 +135,23 @@ const PlayerStats: React.FC = () => {
                 <div className="space-y-1.5 text-sm">
                     <div className="flex justify-between">
                         <span className="text-gray-400">💪 Force</span>
-                        <span>8</span>
+                        <span>{character.strength}</span>
                     </div>
                     <div className="flex justify-between">
                         <span className="text-gray-400">🏃 Agilité</span>
-                        <span>7</span>
+                        <span>{character.agility}</span>
                     </div>
                     <div className="flex justify-between">
                         <span className="text-gray-400">🧠 Intelligence</span>
-                        <span>12</span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span className="text-gray-400">🛡️ Défense</span>
-                        <span>5</span>
+                        <span>{character.intelligence}</span>
                     </div>
                 </div>
             </div>
-
-            <p className="text-xs text-gray-500 text-center">(Données temporaires)</p>
         </div>
     );
 };
 
-// Composant Inventaire
+// Composant Inventaire (inchangé pour l'instant)
 const PlayerInventory: React.FC = () => {
     return (
         <div className="p-4 space-y-4">
