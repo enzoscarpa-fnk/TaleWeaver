@@ -4,7 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e3a03b48-8e41-48b3-8ed7-33f1ad118e06" name="Changes" comment="Added Character to prisma schema + CRUD API" />
+    <list default="true" id="e3a03b48-8e41-48b3-8ed7-33f1ad118e06" name="Changes" comment="Minor fixes">
+      <change afterPath="$PROJECT_DIR$/apps/backend/src/characters/character-creation.controller.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/backend/src/characters/character-creation.service.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/backend/src/characters/characters.module.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/frontend/src/components/CharacterCreation/CharacterCreationChat.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/frontend/src/services/character-creation.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/backend/src/openrouter/dto/chat-completion.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/openrouter/dto/chat-completion.dto.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/backend/src/openrouter/openrouter.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/openrouter/openrouter.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/frontend/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/frontend/src/layouts/GameLayout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/frontend/src/layouts/GameLayout.tsx" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,7 +24,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="features/conversationcontext-record-DB" />
+        <entry key="$PROJECT_DIR$" value="features/character-crud-system" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -48,23 +59,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;features/character-crud-system&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/fnk/WebstormProjects/taleweaver/apps/backend/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "features/character-creation-module",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
+    "ts.external.directory.path": "/Users/fnk/WebstormProjects/taleweaver/apps/backend/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/apps/frontend/src" />
@@ -92,7 +103,7 @@
       <workItem from="1764177717936" duration="10785000" />
       <workItem from="1764773962518" duration="13982000" />
       <workItem from="1765464125982" duration="24538000" />
-      <workItem from="1765646715103" duration="473000" />
+      <workItem from="1765646715103" duration="9769000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />
@@ -150,7 +161,23 @@
       <option name="project" value="LOCAL" />
       <updated>1765646896406</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Added Character to prisma schema + CRUD API">
+      <option name="closed" value="true" />
+      <created>1765647213892</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1765647213892</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Minor fixes">
+      <option name="closed" value="true" />
+      <created>1765647368034</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1765647368034</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -167,7 +194,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="features/basic-ui" />
+                        <option value="features/character-crud-system" />
                       </list>
                     </value>
                   </entry>
@@ -191,6 +218,7 @@
     <MESSAGE value="Added basic UI" />
     <MESSAGE value="Added conversation record and hydration" />
     <MESSAGE value="Added Character to prisma schema + CRUD API" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added Character to prisma schema + CRUD API" />
+    <MESSAGE value="Minor fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Minor fixes" />
   </component>
 </project>

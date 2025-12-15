@@ -17,13 +17,24 @@ export const GameLayout: React.FC = () => {
                         <span className="text-xl">⚔️</span>
                         <h1 className="text-lg font-bold">TaleWeaver</h1>
                     </div>
-                    <Link
-                        to="/dashboard"
-                        className="bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center gap-1"
-                    >
-                        <span>📊</span>
-                        Stats API
-                    </Link>
+
+                    {/* Navigation buttons */}
+                    <div className="flex gap-2">
+                        <Link
+                            to="/character/create"
+                            className="bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center gap-1"
+                        >
+                            <span>✨</span>
+                            Nouveau Perso
+                        </Link>
+                        <Link
+                            to="/dashboard"
+                            className="bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center gap-1"
+                        >
+                            <span>📊</span>
+                            Stats API
+                        </Link>
+                    </div>
                 </header>
 
                 <div className="h-[65%] border-b border-gray-700">

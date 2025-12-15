@@ -11,6 +11,11 @@ interface ChatCompletionRequest {
     messages: Message[];
     model?: string;
     sessionId?: string;
+    temperature?: number;
+    max_tokens?: number;
+    top_p?: number;
+    frequency_penalty?: number;
+    presence_penalty?: number;
 }
 
 interface UsageData {
@@ -41,6 +46,19 @@ export class OpenRouterService {
         try {
             const model = request.model || this.defaultModel;
 
+            // Construction du body avec tous les paramètres optionnels
+            const body: any = {
+                model,
+                messages: request.messages,
+            };
+
+            // Ajoute les paramètres optionnels s'ils sont définis
+            if (request.temperature !== undefined) body.temperature = request.temperature;
+            if (request.max_tokens !== undefined) body.max_tokens = request.max_tokens;
+            if (request.top_p !== undefined) body.top_p = request.top_p;
+            if (request.frequency_penalty !== undefined) body.frequency_penalty = request.frequency_penalty;
+            if (request.presence_penalty !== undefined) body.presence_penalty = request.presence_penalty;
+
             const response = await fetch(this.apiUrl, {
                 method: 'POST',
                 headers: {
@@ -49,10 +67,7 @@ export class OpenRouterService {
                     'X-Title': 'TaleWeaver RPG',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    model,
-                    messages: request.messages,
-                }),
+                body: JSON.stringify(body),
             });
 
             if (!response.ok) {
@@ -77,7 +92,6 @@ export class OpenRouterService {
 
             return data;
         } catch (error) {
-            // 🔥 Ajoute ce log
             console.error('chatCompletion internal error:', error);
 
             if (error instanceof HttpException) {
@@ -109,7 +123,6 @@ export class OpenRouterService {
         const totalCost =
             usage.total_cost ?? this.calculateCost(model, usage);
 
-        // 1) Créer ou récupérer la conversation (Conversation/chat_sessions)
         await this.prisma.conversation.upsert({
             where: { id: sessionId },
             update: {},
@@ -119,41 +132,38 @@ export class OpenRouterService {
             },
         });
 
-        // 2) Sauvegarder le message USER (sans coût)
         if (lastUserMessage) {
             await this.prisma.message.create({
-            data: {
-                sessionId,
+                data: {
+                    sessionId,
                     role: lastUserMessage.role,
-                content: lastUserMessage.content,
-                model,
-                promptTokens: 0,
-                completionTokens: 0,
-                totalTokens: 0,
-                promptCost: 0,
-                completionCost: 0,
-                totalCost: 0,
-            },
-        });
+                    content: lastUserMessage.content,
+                    model,
+                    promptTokens: 0,
+                    completionTokens: 0,
+                    totalTokens: 0,
+                    promptCost: 0,
+                    completionCost: 0,
+                    totalCost: 0,
+                },
+            });
         }
 
-        // 3) Sauvegarder le message ASSISTANT (avec usage + coût)
         await this.prisma.message.create({
-        data: {
-            sessionId,
+            data: {
+                sessionId,
                 role: assistantMsg.role,
-            content: assistantMsg.content,
-            model,
-            promptTokens: usage.prompt_tokens || 0,
-            completionTokens: usage.completion_tokens || 0,
-            totalTokens: usage.total_tokens || 0,
-            promptCost: 0,
-            completionCost: 0,
-            totalCost,
-        },
-    });
+                content: assistantMsg.content,
+                model,
+                promptTokens: usage.prompt_tokens || 0,
+                completionTokens: usage.completion_tokens || 0,
+                totalTokens: usage.total_tokens || 0,
+                promptCost: 0,
+                completionCost: 0,
+                totalCost,
+            },
+        });
 
-        // 4) Mettre à jour les stats quotidiennes
         await this.updateDailyStats(model, usage, totalCost);
     }
 
@@ -209,7 +219,6 @@ export class OpenRouterService {
         });
     }
 
-    // Dashboard (inchangé)
     async getUsageStats(startDate: Date, endDate: Date) {
         return this.prisma.usageStats.findMany({
             where: {
