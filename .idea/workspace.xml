@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e3a03b48-8e41-48b3-8ed7-33f1ad118e06" name="Changes" comment="Added basic character creation module with chat">
-      <change beforePath="$PROJECT_DIR$/apps/backend/src/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/app.module.ts" afterDir="false" />
+    <list default="true" id="e3a03b48-8e41-48b3-8ed7-33f1ad118e06" name="Changes" comment="Fixed method for the AI generation of the backstory">
+      <change beforePath="$PROJECT_DIR$/apps/backend/src/characters/character-creation.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/characters/character-creation.controller.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/backend/src/characters/character-creation.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/characters/character-creation.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/frontend/src/components/CharacterCreation/CharacterCreationChat.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/frontend/src/components/CharacterCreation/CharacterCreationChat.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/frontend/src/main.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/frontend/src/main.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -97,7 +95,7 @@
       <workItem from="1764177717936" duration="10785000" />
       <workItem from="1764773962518" duration="13982000" />
       <workItem from="1765464125982" duration="24538000" />
-      <workItem from="1765646715103" duration="37898000" />
+      <workItem from="1765646715103" duration="46231000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />
@@ -179,7 +177,23 @@
       <option name="project" value="LOCAL" />
       <updated>1765822258761</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Fixed various bugs where step-by-step system was broken and system-prompts were ignored.">
+      <option name="closed" value="true" />
+      <created>1765975801137</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1765975801137</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Fixed method for the AI generation of the backstory">
+      <option name="closed" value="true" />
+      <created>1765977420195</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1765977420195</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -222,6 +236,8 @@
     <MESSAGE value="Added Character to prisma schema + CRUD API" />
     <MESSAGE value="Minor fixes" />
     <MESSAGE value="Added basic character creation module with chat" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added basic character creation module with chat" />
+    <MESSAGE value="Fixed various bugs where step-by-step system was broken and system-prompts were ignored." />
+    <MESSAGE value="Fixed method for the AI generation of the backstory" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed method for the AI generation of the backstory" />
   </component>
 </project>

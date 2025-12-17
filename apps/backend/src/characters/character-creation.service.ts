@@ -44,7 +44,64 @@ export class CharacterCreationService {
         let aiMessage = '';
         let nextStep: string = currentStep.step;
 
-        if (shouldAdvance) {
+        // Traitement backstory générée : Appel dédié pour générer une backstory pure
+        if (needsAIBackstory && currentStep.step === 'backstory') {
+            console.log('🤖 Generating backstory with dedicated prompt');
+
+            // Prompt système strict
+            const backstorySystemPrompt = `Tu es un narrateur de RPG. Tu génères UNIQUEMENT des backstories de personnages.
+
+                RÈGLES ABSOLUES :
+                - N'écris QUE l'histoire du personnage
+                - JAMAIS de "Voici", "Bien sûr", "Ah", etc.
+                - JAMAIS de questions à la fin
+                - JAMAIS de commentaires méta
+                - Commence DIRECTEMENT par l'histoire narrative
+                - 2-3 phrases maximum
+                - Ton immersif et épique`;
+
+            // Message user qui donne le contexte
+            const backstoryUserPrompt = `Génère le backstory pour :
+                Nom : ${currentStep.data?.name}
+                Classe : ${currentStep.data?.class}
+                
+                Écris uniquement l'histoire (origines, pourquoi il a pris la mer, motivations).`;
+
+            const backstoryResponse = await this.openRouter.chatCompletion({
+                model: 'openai/gpt-4o-mini',
+                messages: [
+                    { role: 'system', content: backstorySystemPrompt },
+                    { role: 'user', content: backstoryUserPrompt },
+                ],
+                temperature: 0.7,
+                max_tokens: 200,
+            });
+
+            parsedData.backstory = backstoryResponse.choices[0].message.content.trim();
+            console.log('🤖 AI generated backstory:', parsedData.backstory);
+
+            // Maintenant génère le message pour l'utilisateur (step suivant)
+            shouldAdvance = true;
+            nextStep = this.getNextStep(currentStep.step);
+
+            // Génère le prompt du step stats
+            const updatedData = { ...currentStep.data, ...parsedData };
+            const nextPrompt = this.getSystemPromptForStep(nextStep, updatedData);
+
+            const nextStepResponse = await this.openRouter.chatCompletion({
+                model: 'openai/gpt-4o-mini',
+                messages: [
+                    { role: 'system', content: nextPrompt },
+                    { role: 'user', content: 'Continue' },
+                ],
+                temperature: 0.7,
+            });
+
+            // Combine le backstory généré + le message du step stats
+            aiMessage = `📜 **Voici ton histoire :**\n\n${parsedData.backstory}\n\n---\n\n${nextStepResponse.choices[0].message.content}`;
+            console.log('🤖 Combined message:', aiMessage);
+
+        } else if (shouldAdvance) {
             // Si on a parsé des données, génère le prompt du prochain step
             console.log('➡️ Data extracted, advancing to next step');
             nextStep = this.getNextStep(currentStep.step);
@@ -86,35 +143,6 @@ export class CharacterCreationService {
 
             aiMessage = response.choices[0].message.content;
             console.log('🤖 AI response for CURRENT step:', aiMessage);
-        }
-
-        // Traitement backstory générée (extrait la backstory et force l'avancement)
-        if (needsAIBackstory && currentStep.step === 'backstory') {
-            console.log('🤖 Extracting AI-generated backstory from response');
-
-            const lines = aiMessage.split('\n').filter(line => line.trim().length > 0);
-
-            // Cherche une ligne narrative (évite les lignes de questions/instructions)
-            const narrativeLine = lines.find(line =>
-                line.length >= 50 &&
-                !line.includes('?') &&
-                !line.toLowerCase().includes('force') &&
-                !line.toLowerCase().includes('intelligence') &&
-                !line.toLowerCase().includes('agilité')
-            );
-
-            if (narrativeLine) {
-                parsedData.backstory = narrativeLine.trim();
-            } else {
-                // Fallback : prend tout le message sauf la dernière ligne (souvent une question)
-                parsedData.backstory = lines.slice(0, -1).join(' ').trim();
-            }
-
-            console.log('🤖 AI generated backstory:', parsedData.backstory);
-
-            // Force l'avancement au step suivant
-            shouldAdvance = true;
-            nextStep = this.getNextStep(currentStep.step);
         }
 
         console.log('🔄 Current step:', currentStep.step);
@@ -190,8 +218,6 @@ export class CharacterCreationService {
                 );
 
                 if (requestsGeneration) {
-                    // L'IA va générer une backstory dans sa réponse
-                    // On parse sa propre réponse
                     return { backstory: '[AI_GENERATED]' }; // Marqueur spécial
                 }
 
@@ -207,6 +233,7 @@ export class CharacterCreationService {
                     agility: 0,
                 };
 
+                // Pattern 1 : "Force: 5, Intelligence: 7, Agilité: 3"
                 const forceMatch = content.match(/force[:\s]+\+?(\d+)|(\d+)\s+(?:en\s+)?force/i);
                 const intMatch = content.match(/intelligence[:\s]+\+?(\d+)|(\d+)\s+(?:en\s+)?intelligence/i);
                 const agilityMatch = content.match(/agilit[eé][:\s]+\+?(\d+)|(\d+)\s+(?:en\s+)?agilit[eé]/i);
@@ -215,10 +242,31 @@ export class CharacterCreationService {
                 if (intMatch) stats.intelligence = parseInt(intMatch[1] || intMatch[2]);
                 if (agilityMatch) stats.agility = parseInt(agilityMatch[1] || agilityMatch[2]);
 
-                if (stats.strength > 0 || stats.intelligence > 0 || stats.agility > 0) {
+                // Pattern 2 : 3 nombres séparés par espaces
+                if (stats.strength === 0 && stats.intelligence === 0 && stats.agility === 0) {
+                    const numbersOnly = content.match(/^(\d+)\s+(\d+)\s+(\d+)$/);
+                    if (numbersOnly) {
+                        stats.strength = parseInt(numbersOnly[1]);
+                        stats.intelligence = parseInt(numbersOnly[2]);
+                        stats.agility = parseInt(numbersOnly[3]);
+                        console.log('🎲 Parsed as "X Y Z" format:', stats);
+                    }
+                }
+
+                // Validation : Total = 15, toutes positives, max 15 par stat
+                const total = stats.strength + stats.intelligence + stats.agility;
+                const allPositive = stats.strength >= 0 && stats.intelligence >= 0 && stats.agility >= 0;
+                const allValid = stats.strength <= 15 && stats.intelligence <= 15 && stats.agility <= 15;
+
+                console.log('🎲 Stats parsed:', stats, 'Total:', total);
+
+                if (total === 15 && allPositive && allValid && (stats.strength > 0 || stats.intelligence > 0 || stats.agility > 0)) {
+                    console.log('✅ Stats validated!');
                     return stats;
                 }
-                break;
+
+                console.log('❌ Stats invalid - staying on stats step');
+                return {};
         }
 
         return {};
@@ -227,46 +275,52 @@ export class CharacterCreationService {
     private getSystemPromptForStep(step: string, data?: any): string {
         const prompts = {
             name: `Tu es un vieux maître du jeu RPG dans une taverne de pirates.
-                Un nouvel aventurier arrive pour créer son héros.
-                Tu lui passes la bouteille de rhum pour qu'il se mette à l'aise.
-                
-                Demande-lui chaleureusement le nom qu'il souhaite donner à son personnage pirate.
-                Propose 3 exemples de noms légendaires pour l'inspirer.
-                Sois immersif mais concis (3-4 phrases).`,
+                    Un nouvel aventurier arrive pour créer son héros.
+                    Tu lui passes la bouteille de rhum pour qu'il se mette à l'aise.
+                    
+                    Demande-lui chaleureusement le nom qu'il souhaite donner à son personnage pirate.
+                    Propose 3 exemples de noms légendaires pour l'inspirer.
+                    Sois immersif mais concis (3-4 phrases).`,
 
             class: `Tu es un maître du jeu RPG. ${data?.name} a rejoint ta taverne.
         
-                Présente-lui les 3 classes de pirates disponibles avec enthousiasme :
-                
-                1. **Marin de Fer** - Guerrier redoutable du combat rapproché (Force)
-                2. **Navigateur occulte** - Sorcier des mers maîtrisant les arcanes maritimes (Intelligence)
-                3. **Bretteur des Flots** - Duelliste agile et précis à l'épée (Agilité)
-                
-                ⚠️ IMPORTANT : Ne propose QUE ces 3 classes. N'invente aucune autre classe.
-                
-                Demande-lui de choisir en tapant 1, 2, 3 ou le nom de la classe.
-                Ajoute une touche immersive mais reste fidèle aux 3 classes exactes.`,
+                    Présente-lui les 3 classes de pirates disponibles avec enthousiasme :
+                    
+                    1. **Marin de Fer** - Guerrier redoutable du combat rapproché (Force)
+                    2. **Navigateur occulte** - Sorcier des mers maîtrisant les arcanes maritimes (Intelligence)
+                    3. **Bretteur des Flots** - Duelliste agile et précis à l'épée (Agilité)
+                    
+                    ⚠️ IMPORTANT : Ne propose QUE ces 3 classes. N'invente aucune autre classe.
+                    
+                    Demande-lui de choisir en tapant 1, 2, 3 ou le nom de la classe.
+                    Ajoute une touche immersive mais reste fidèle aux 3 classes exactes.`,
 
             backstory: `Tu es un maître du jeu RPG. ${data?.name} est maintenant un ${data?.class}.
                     
                     Demande-lui de raconter l'histoire de son personnage : pourquoi a-t-il pris la mer ?
                     Qu'est-ce qui l'a poussé à devenir pirate ?
                     
-                    S'il répond "génère" ou "oui", crée toi-même une backstory immersive et épique (2-3 phrases).
-                    Sinon, accepte ce qu'il écrit.
+                    S'il répond "génère", tu généreras une backstory pour lui.
+                    Sinon, accepte ce qu'il écrit (minimum 15 caractères).
                     
-                    Sois chaleureux et encourage sa créativité.`,
+                    Sois chaleureux et encourage sa créativité (2-3 phrases).`,
 
             stats: `Tu es un maître du jeu RPG. ${data?.name} le ${data?.class} est presque prêt pour l'aventure !
-                
-                Il lui reste à répartir 15 points de bonus entre ses 3 caractéristiques :
-                - **Force** : Puissance au combat rapproché
-                - **Intelligence** : Maîtrise de la magie et résolution d'énigmes
-                - **Agilité** : Rapidité, précision et dextérité
-                
-                Demande-lui sa répartition. Exemple : "Force: 7, Intelligence: 5, Agilité: 3"
-                
-                Ajoute une note immersive sur l'importance de ce choix pour son aventure.`,
+
+                    Il lui reste à répartir **exactement 15 points** entre ses 3 caractéristiques :
+                    - **Force** : Puissance au combat rapproché (0-15)
+                    - **Intelligence** : Maîtrise de la magie et résolution d'énigmes (0-15)
+                    - **Agilité** : Rapidité, précision et dextérité (0-15)
+                    
+                    ⚠️ RÈGLES :
+                    - Le total DOIT faire exactement 15 points
+                    - Chaque stat doit être entre 0 et 15
+                    
+                    Formats acceptés :
+                    - "Force: 7, Intelligence: 5, Agilité: 3"
+                    - "7 5 3" (Force Intelligence Agilité)
+                    
+                    Ajoute une note immersive mais reste bref (2-3 phrases max).`,
         };
 
         return prompts[step] || prompts.name;
@@ -275,7 +329,11 @@ export class CharacterCreationService {
     private getNextStep(currentStep: string): string {
         const stepOrder = ['name', 'class', 'backstory', 'stats', 'complete'];
         const currentIndex = stepOrder.indexOf(currentStep);
-        return stepOrder[currentIndex + 1] || 'complete';
+        const next = stepOrder[currentIndex + 1];
+
+        console.log(`🔄 getNextStep: ${currentStep} → ${next}`);
+
+        return next || 'complete';
     }
 
     async finalizeCharacter(characterData: any) {
