@@ -10,17 +10,17 @@ export const CharacterCreationChat: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [inputValue, setInputValue] = useState('');
     const [currentStep, setCurrentStep] = useState('name');
-    const [characterData, setCharacterData] = useState({});
+    const [characterData, setCharacterData] = useState<any>({});
     const [loading, setLoading] = useState(false);
     const [sessionId] = useState(() => `session-${Date.now()}`);
+    const [isSending, setIsSending] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    // Message d'accueil initial
     useEffect(() => {
         setMessages([
             {
                 role: 'assistant',
-                content: 'Bienvenue, aventurier ! Je suis ton Maître du Jeu. Ensemble, nous allons créer ton héros légendaire. Pour commencer, dis-moi : quel genre de personnage souhaites-tu incarner ?',
+                content: '🏴‍☠️ Ahoy, matelot ! Bienvenue dans cette taverne où les légendes naissent ! Prends un rhum et prépare-toi à créer ton héros pirate. Quel nom veux-tu lui donner ? Quelques suggestions : Barbe-Noire, Anne la Tempête, Capitaine Drake.',
             },
         ]);
     }, []);
@@ -31,16 +31,18 @@ export const CharacterCreationChat: React.FC = () => {
     }, [messages]);
 
     const handleSendMessage = async () => {
-        if (!inputValue.trim() || loading) return;
+        if (!inputValue.trim() || loading || isSending) return;
 
         const userMessage = inputValue.trim();
         setInputValue('');
         setLoading(true);
+        setIsSending(true);
 
-        // Ajoute le message utilisateur
         setMessages((prev) => [...prev, { role: 'user', content: userMessage }]);
 
         try {
+            console.log('📤 Sending:', { currentStep, userMessage, characterData });
+
             const response = await characterCreationService.processStep({
                 sessionId,
                 currentStep,
@@ -48,57 +50,75 @@ export const CharacterCreationChat: React.FC = () => {
                 accumulatedData: characterData,
             });
 
-            // Ajoute la réponse de l'IA
+            console.log('📥 Received:', response);
+
             setMessages((prev) => [
                 ...prev,
                 { role: 'assistant', content: response.aiMessage },
             ]);
 
-            // Met à jour les données du personnage
-            setCharacterData((prev) => ({
-                ...prev,
+            const updatedData = {
+                ...characterData,
                 ...response.extractedData,
-            }));
+            };
 
-            // Passe à l'étape suivante
+            setCharacterData(updatedData);
+            console.log('💾 Updated character data:', updatedData);
+
+            if (Object.keys(response.extractedData).length > 0) {
+                const validationMsg = Object.entries(response.extractedData)
+                    .map(([key, value]) => `✅ ${key}: ${value}`)
+                    .join('\n');
+                console.log('✅ Validated:\n', validationMsg);
+            }
+
             if (response.nextStep !== 'complete') {
                 setCurrentStep(response.nextStep);
+                console.log('➡️ Next step:', response.nextStep);
             } else {
-                // Finalise la création
-                await handleFinalize();
+                await handleFinalize(updatedData);
             }
         } catch (error) {
-            console.error('Error:', error);
+            console.error('❌ Error:', error);
             setMessages((prev) => [
                 ...prev,
                 {
                     role: 'assistant',
-                    content: "Désolé, j'ai rencontré une erreur. Peux-tu répéter ?",
+                    content: "Désolé, erreur. Peux-tu répéter ?",
                 },
             ]);
         } finally {
             setLoading(false);
+            setIsSending(false);
         }
     };
 
-    const handleFinalize = async () => {
+    const handleFinalize = async (finalData: any) => {
         try {
-            const character = await characterCreationService.finalize(characterData);
+            console.log('🎉 Finalizing with ', finalData);
+
+            const character = await characterCreationService.finalize(finalData);
 
             setMessages((prev) => [
                 ...prev,
                 {
                     role: 'assistant',
-                    content: `Félicitations ! Ton héros **${character.name}**, ${character.class} de niveau ${character.level}, est prêt pour l'aventure !`,
+                    content: `✨ Félicitations ! Ton héros **${character.name}**, ${character.class} de niveau ${character.level}, est prêt pour l'aventure !\n\n🗡️ Force: ${character.strength}\n🧠 Intelligence: ${character.intelligence}\n🏃 Agilité: ${character.agility}\n\nRedirection vers le jeu...`,
                 },
             ]);
 
-            // Redirection après 2 secondes
             setTimeout(() => {
-                window.location.href = '/game';
-            }, 2000);
+                window.location.href = '/';
+            }, 3000);
         } catch (error) {
-            console.error('Finalization error:', error);
+            console.error('❌ Finalization error:', error);
+            setMessages((prev) => [
+                ...prev,
+                {
+                    role: 'assistant',
+                    content: `❌ Erreur lors de la finalisation.\n\nDonnées recueillies : ${JSON.stringify(finalData, null, 2)}`,
+                },
+            ]);
         }
     };
 
@@ -111,7 +131,6 @@ export const CharacterCreationChat: React.FC = () => {
 
     return (
         <div className="flex flex-col h-screen bg-gray-900 text-white">
-            {/* Header */}
             <div className="bg-gray-800 border-b border-gray-700 p-4">
                 <h1 className="text-2xl font-bold">🎲 Création de Personnage</h1>
                 <p className="text-sm text-gray-400">
@@ -119,6 +138,7 @@ export const CharacterCreationChat: React.FC = () => {
                     {currentStep === 'class' && '⚔️ Classe'}
                     {currentStep === 'backstory' && '📖 Histoire'}
                     {currentStep === 'stats' && '💪 Statistiques'}
+                    {currentStep === 'complete' && '✅ Terminé'}
                 </p>
             </div>
 
@@ -168,7 +188,7 @@ export const CharacterCreationChat: React.FC = () => {
                     />
                     <button
                         onClick={handleSendMessage}
-                        disabled={loading || !inputValue.trim()}
+                        disabled={loading || isSending || !inputValue.trim()} // ✅ Ajout isSending
                         className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed px-6 py-2 rounded-lg font-medium transition-colors"
                     >
                         Envoyer

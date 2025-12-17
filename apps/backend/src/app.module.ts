@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { OpenRouterModule } from './openrouter/openrouter.module';
 import { ConversationsModule } from './conversations/conversations.module';
+import { CharactersModule } from './characters/characters.module';
 
 @Module({
     imports: [
@@ -13,6 +14,7 @@ import { ConversationsModule } from './conversations/conversations.module';
         PrismaModule,
         OpenRouterModule,
         ConversationsModule,
+        CharactersModule,
     ],
 })
 export class AppModule {}
