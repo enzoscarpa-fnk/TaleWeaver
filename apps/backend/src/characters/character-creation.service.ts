@@ -37,10 +37,9 @@ export class CharacterCreationService {
         let parsedData: ParsedData = this.parseUserMessage(userMessage, currentStep.step);
         console.log('✅ Parsed from user:', parsedData);
 
-        let shouldAdvance = Object.keys(parsedData).length > 0;
-
-        // Si backstory générée par IA, on force l'avancement
+        // Si backstory à générer, ne pas considérer comme "shouldAdvance"
         const needsAIBackstory = parsedData.backstory === '[AI_GENERATED]';
+        let shouldAdvance = needsAIBackstory ? false : Object.keys(parsedData).length > 0;
 
         let aiMessage = '';
         let nextStep: string = currentStep.step;
@@ -89,17 +88,28 @@ export class CharacterCreationService {
             console.log('🤖 AI response for CURRENT step:', aiMessage);
         }
 
-        // Traitement AI-generated backstory (uniquement si on est au step backstory et que l'IA doit générer)
+        // Traitement backstory générée (extrait la backstory et force l'avancement)
         if (needsAIBackstory && currentStep.step === 'backstory') {
-            const lines = aiMessage.split('\n').filter(line => line.trim().length > 0);
-            const longestLine = lines.reduce((longest, current) =>
-                current.length > longest.length ? current : longest, '');
+            console.log('🤖 Extracting AI-generated backstory from response');
 
-            if (longestLine && longestLine.length >= 50) {
-                parsedData.backstory = longestLine.trim();
+            const lines = aiMessage.split('\n').filter(line => line.trim().length > 0);
+
+            // Cherche une ligne narrative (évite les lignes de questions/instructions)
+            const narrativeLine = lines.find(line =>
+                line.length >= 50 &&
+                !line.includes('?') &&
+                !line.toLowerCase().includes('force') &&
+                !line.toLowerCase().includes('intelligence') &&
+                !line.toLowerCase().includes('agilité')
+            );
+
+            if (narrativeLine) {
+                parsedData.backstory = narrativeLine.trim();
             } else {
-                parsedData.backstory = aiMessage.trim();
+                // Fallback : prend tout le message sauf la dernière ligne (souvent une question)
+                parsedData.backstory = lines.slice(0, -1).join(' ').trim();
             }
+
             console.log('🤖 AI generated backstory:', parsedData.backstory);
 
             // Force l'avancement au step suivant
