@@ -5,6 +5,12 @@ interface Message {
     content: string;
 }
 
+interface GameContext {
+    type: string;
+    step?: string;
+    data?: any;
+}
+
 const STORAGE_KEY = 'taleweaver_session_id';
 
 function generateUUID(): string {
@@ -20,9 +26,11 @@ function generateUUID(): string {
 
 export const useChat = () => {
     const [messages, setMessages] = useState<Message[]>([]);
+    const [context, setContext] = useState<GameContext>({ type: 'idle' });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [sessionId, setSessionId] = useState<string | null>(null);
+    const [characterCreated, setCharacterCreated] = useState(0);
 
     // 1) Initialiser / restaurer le sessionId
     useEffect(() => {
@@ -36,7 +44,7 @@ export const useChat = () => {
         }
     }, []);
 
-    // 2) Charger l’historique quand on a un sessionId
+    // 2) Charger l'historique quand on a un sessionId
     useEffect(() => {
         const loadHistory = async () => {
             if (!sessionId) return;
@@ -80,40 +88,52 @@ export const useChat = () => {
         setError(null);
 
         const userMessage: Message = { role: 'user', content };
-        const updatedMessages = [...messages, userMessage];
-        setMessages(updatedMessages);
+        setMessages((prev) => [...prev, userMessage]);
+
+        console.log('📤 Sending:', { sessionId, message: content, context });
+
+        // Sauvegarde du contexte précédent pour détecter transition
+        const previousContext = context;
 
         try {
-            const response = await fetch('http://localhost:3001/api/chat/completion', {
+            const response = await fetch('http://localhost:3001/chat/message', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    messages: updatedMessages,
                     sessionId,
+                    message: content,
+                    context,
                 }),
             });
 
             if (!response.ok) {
-                throw new Error('Erreur lors de l’envoi du message');
+                throw new Error('Erreur lors de l\'envoi du message');
             }
 
             const data = await response.json();
-            const assistantContent =
-                data.choices?.[0]?.message?.content ?? 'Réponse vide du modèle';
+            console.log('📥 Received:', data);
 
             const assistantMessage: Message = {
                 role: 'assistant',
-                content: assistantContent,
+                content: data.aiMessage,
             };
 
             setMessages((prev) => [...prev, assistantMessage]);
+
+            if (data.context) {
+                setContext(data.context);
+                console.log('🔄 Context updated:', data.context);
+
+                // Détecte fin de création : passage de 'character-creation' à 'idle'
+                if (previousContext.type === 'character-creation' && data.context.type === 'idle') {
+                    console.log('🎉 Character creation completed! Triggering refresh...');
+                    setCharacterCreated(prev => prev + 1); // Incrémente pour forcer refresh
+                }
+            }
         } catch (err) {
-            const errorMessage =
-                err instanceof Error
-                    ? err.message
-                    : 'Erreur lors de l’envoi du message';
+            const errorMessage = err instanceof Error ? err.message : 'Erreur lors de l\'envoi du message';
             setError(errorMessage);
             console.error('Chat error:', err);
         } finally {
@@ -124,8 +144,17 @@ export const useChat = () => {
     const clearMessages = () => {
         setMessages([]);
         setError(null);
-        // on garde sessionId pour conserver la même conversation
+        setContext({ type: 'idle' });
     };
 
-    return { messages, loading, error, sendMessage, clearMessages, sessionId };
+    return {
+        messages,
+        context,
+        loading,
+        error,
+        sendMessage,
+        clearMessages,
+        sessionId,
+        characterCreated,
+    };
 };

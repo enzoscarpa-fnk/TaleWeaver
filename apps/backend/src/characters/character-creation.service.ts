@@ -218,7 +218,7 @@ export class CharacterCreationService {
                 );
 
                 if (requestsGeneration) {
-                    return { backstory: '[AI_GENERATED]' }; // Marqueur spécial
+                    return { backstory: '[AI_GENERATED]' };
                 }
 
                 if (userMessage.trim().length >= 15) {
@@ -233,24 +233,22 @@ export class CharacterCreationService {
                     agility: 0,
                 };
 
-                // Pattern 1 : "Force: 5, Intelligence: 7, Agilité: 3"
-                const forceMatch = content.match(/force[:\s]+\+?(\d+)|(\d+)\s+(?:en\s+)?force/i);
-                const intMatch = content.match(/intelligence[:\s]+\+?(\d+)|(\d+)\s+(?:en\s+)?intelligence/i);
-                const agilityMatch = content.match(/agilit[eé][:\s]+\+?(\d+)|(\d+)\s+(?:en\s+)?agilit[eé]/i);
+                // Pattern 1 : Format simple "3 4 8" (Force Intelligence Agilité)
+                const simpleMatch = userMessage.trim().match(/^\s*(\d+)\s+(\d+)\s+(\d+)\s*$/);
+                if (simpleMatch) {
+                    stats.strength = parseInt(simpleMatch[1]);
+                    stats.intelligence = parseInt(simpleMatch[2]);
+                    stats.agility = parseInt(simpleMatch[3]);
+                    console.log('🎲 Parsed as "X Y Z" format:', stats);
+                } else {
+                    // Pattern 2 : Format détaillé "Force: 5, Intelligence: 7, Agilité: 3"
+                    const forceMatch = content.match(/force[:\s]+(\d+)/i);
+                    const intMatch = content.match(/intelligence[:\s]+(\d+)/i);
+                    const agilityMatch = content.match(/agil(?:it[ée]|ity)[:\s]+(\d+)/i);
 
-                if (forceMatch) stats.strength = parseInt(forceMatch[1] || forceMatch[2]);
-                if (intMatch) stats.intelligence = parseInt(intMatch[1] || intMatch[2]);
-                if (agilityMatch) stats.agility = parseInt(agilityMatch[1] || agilityMatch[2]);
-
-                // Pattern 2 : 3 nombres séparés par espaces
-                if (stats.strength === 0 && stats.intelligence === 0 && stats.agility === 0) {
-                    const numbersOnly = content.match(/^(\d+)\s+(\d+)\s+(\d+)$/);
-                    if (numbersOnly) {
-                        stats.strength = parseInt(numbersOnly[1]);
-                        stats.intelligence = parseInt(numbersOnly[2]);
-                        stats.agility = parseInt(numbersOnly[3]);
-                        console.log('🎲 Parsed as "X Y Z" format:', stats);
-                    }
+                    if (forceMatch) stats.strength = parseInt(forceMatch[1]);
+                    if (intMatch) stats.intelligence = parseInt(intMatch[1]);
+                    if (agilityMatch) stats.agility = parseInt(agilityMatch[1]);
                 }
 
                 // Validation : Total = 15, toutes positives, max 15 par stat
@@ -307,12 +305,12 @@ export class CharacterCreationService {
 
             stats: `Tu es un maître du jeu RPG. ${data?.name} le ${data?.class} est presque prêt pour l'aventure !
 
-                    Il lui reste à répartir **exactement 15 points** entre ses 3 caractéristiques :
+                    Explique-lui qu'il reste à répartir **exactement 15 points** entre ses 3 caractéristiques :
                     - **Force** : Puissance au combat rapproché (0-15)
                     - **Intelligence** : Maîtrise de la magie et résolution d'énigmes (0-15)
                     - **Agilité** : Rapidité, précision et dextérité (0-15)
                     
-                    ⚠️ RÈGLES :
+                    ⚠️ **RÈGLES STRICTES** :
                     - Le total DOIT faire exactement 15 points
                     - Chaque stat doit être entre 0 et 15
                     
@@ -320,6 +318,7 @@ export class CharacterCreationService {
                     - "Force: 7, Intelligence: 5, Agilité: 3"
                     - "7 5 3" (Force Intelligence Agilité)
                     
+                    Demande au joueur de taper ses stats dans un de ces formats.
                     Ajoute une note immersive mais reste bref (2-3 phrases max).`,
         };
 

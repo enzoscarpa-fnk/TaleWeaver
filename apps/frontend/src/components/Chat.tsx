@@ -1,10 +1,14 @@
-// apps/frontend/src/components/Chat.tsx
 import React, { useState, useRef, useEffect } from 'react';
-import { useChat } from '../hooks/useChat';
 
-export const Chat: React.FC = () => {
+type ChatHook = ReturnType<typeof import('../hooks/useChat').useChat>;
+
+interface ChatProps {
+    chatHook: ChatHook;
+}
+
+export const Chat: React.FC<ChatProps> = ({ chatHook }) => {
     const [input, setInput] = useState('');
-    const { messages, loading, error, sendMessage } = useChat();
+    const { messages, context, loading, error, sendMessage } = chatHook;
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -18,14 +22,51 @@ export const Chat: React.FC = () => {
         setInput('');
     };
 
+    // Badge de contexte
+    const getContextBadge = () => {
+        switch (context.type) {
+            case 'character-creation':
+                return (
+                    <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-medium">
+                        📝 Création - {context.step}
+                    </span>
+                );
+            case 'exploration':
+                return (
+                    <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium">
+                        🗺️ Exploration
+                    </span>
+                );
+            case 'combat':
+                return (
+                    <span className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-medium">
+                        ⚔️ Combat
+                    </span>
+                );
+            default:
+                return (
+                    <span className="bg-gray-600 text-white px-3 py-1 rounded-full text-xs font-medium">
+                        💬 Prêt à l'aventure
+                    </span>
+                );
+        }
+    };
+
     return (
         <div className="h-full flex flex-col bg-gray-900">
+            {/* Header avec badge */}
+            <div className="bg-gray-800 border-b border-gray-700 px-4 py-3 flex items-center justify-between">
+                <h1 className="text-xl font-bold text-white">🏴‍☠️ TaleWeaver</h1>
+                {getContextBadge()}
+            </div>
+
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 {messages.length === 0 && (
                     <div className="text-center text-gray-500 mt-8">
-                        <p className="text-lg mb-2">🎭</p>
-                        <p>Commencez votre aventure...</p>
+                        <p className="text-4xl mb-2">🎭</p>
+                        <p className="text-lg mb-1">Bienvenue, aventurier !</p>
+                        <p className="text-sm">Tape <code className="bg-gray-800 px-2 py-1 rounded">/help</code> pour voir les commandes</p>
                     </div>
                 )}
 
@@ -74,7 +115,7 @@ export const Chat: React.FC = () => {
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder="Que faites-vous ?"
+                        placeholder="Tape /create pour créer un personnage, /help pour l'aide..."
                         disabled={loading}
                         className="flex-1 bg-gray-700 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                     />

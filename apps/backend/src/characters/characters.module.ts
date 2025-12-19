@@ -10,5 +10,6 @@ import { OpenRouterModule } from '../openrouter/openrouter.module';
     imports: [PrismaModule, OpenRouterModule],
     controllers: [CharactersController, CharacterCreationController],
     providers: [CharactersService, CharacterCreationService],
+    exports: [CharactersService, CharacterCreationService],
 })
 export class CharactersModule {}

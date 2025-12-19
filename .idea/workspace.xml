@@ -4,9 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e3a03b48-8e41-48b3-8ed7-33f1ad118e06" name="Changes" comment="Fixed method for the AI generation of the backstory">
-      <change beforePath="$PROJECT_DIR$/apps/backend/src/characters/character-creation.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/characters/character-creation.controller.ts" afterDir="false" />
+    <list default="true" id="e3a03b48-8e41-48b3-8ed7-33f1ad118e06" name="Changes" comment="Fixed the system-prompt to smooth the conversation and correctly parse the information when the user asks the model to generate its character's backstory">
+      <change afterPath="$PROJECT_DIR$/apps/backend/src/chat/chat.controller.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/backend/src/chat/chat.module.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/backend/src/chat/chat.service.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/backend/src/chat/dto/chat-message.dto.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/backend/src/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/app.module.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/backend/src/characters/character-creation.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/characters/character-creation.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/backend/src/characters/characters.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/characters/characters.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/frontend/src/components/Chat.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/frontend/src/components/Chat.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/frontend/src/components/PlayerPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/frontend/src/components/PlayerPanel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/frontend/src/hooks/useCharacter.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/frontend/src/hooks/useCharacter.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/frontend/src/hooks/useChat.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/frontend/src/hooks/useChat.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/frontend/src/layouts/GameLayout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/frontend/src/layouts/GameLayout.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,7 +105,7 @@
       <workItem from="1764177717936" duration="10785000" />
       <workItem from="1764773962518" duration="13982000" />
       <workItem from="1765464125982" duration="24538000" />
-      <workItem from="1765646715103" duration="46231000" />
+      <workItem from="1765646715103" duration="69075000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />
@@ -193,7 +203,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765977420195</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Fixed the system-prompt to smooth the conversation and correctly parse the information when the user asks the model to generate its character's backstory">
+      <option name="closed" value="true" />
+      <created>1765985632812</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1765985632812</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -238,6 +256,7 @@
     <MESSAGE value="Added basic character creation module with chat" />
     <MESSAGE value="Fixed various bugs where step-by-step system was broken and system-prompts were ignored." />
     <MESSAGE value="Fixed method for the AI generation of the backstory" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed method for the AI generation of the backstory" />
+    <MESSAGE value="Fixed the system-prompt to smooth the conversation and correctly parse the information when the user asks the model to generate its character's backstory" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed the system-prompt to smooth the conversation and correctly parse the information when the user asks the model to generate its character's backstory" />
   </component>
 </project>

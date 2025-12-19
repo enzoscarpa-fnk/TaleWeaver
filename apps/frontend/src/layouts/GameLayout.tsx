@@ -3,12 +3,21 @@ import { PlayerPanel } from '../components/PlayerPanel';
 import { Chat } from '../components/Chat';
 import { GameInfo } from '../components/GameInfo';
 import { Link } from 'react-router-dom';
+import { useChat } from '../hooks/useChat';
 
 export const GameLayout: React.FC = () => {
+    const chatHook = useChat();
+
+    console.log('🏠 GameLayout render - characterCreated:', chatHook.characterCreated);
+
     return (
         <div className="h-screen w-screen bg-gray-900 text-white flex overflow-hidden">
             <aside className="w-1/4 h-full border-r border-gray-700 flex flex-col">
-                <PlayerPanel />
+                {/* Passe characterCreated comme key ET prop */}
+                <PlayerPanel
+                    key={chatHook.characterCreated}
+                    refreshTrigger={chatHook.characterCreated}
+                />
             </aside>
 
             <main className="w-3/4 h-full flex flex-col">
@@ -18,7 +27,6 @@ export const GameLayout: React.FC = () => {
                         <h1 className="text-lg font-bold">TaleWeaver</h1>
                     </div>
 
-                    {/* Navigation buttons */}
                     <div className="flex gap-2">
                         <Link
                             to="/character/create"
@@ -38,7 +46,8 @@ export const GameLayout: React.FC = () => {
                 </header>
 
                 <div className="h-[65%] border-b border-gray-700">
-                    <Chat />
+                    {/* Passe le hook au Chat */}
+                    <Chat chatHook={chatHook} />
                 </div>
 
                 <div className="h-[35%] overflow-hidden">

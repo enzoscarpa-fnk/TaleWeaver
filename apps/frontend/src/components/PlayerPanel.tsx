@@ -2,18 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { useCharacter } from '../hooks/useCharacter';
 import { characterService } from '../services/character.service';
 
-export const PlayerPanel: React.FC = () => {
+interface PlayerPanelProps {
+    refreshTrigger?: number;
+}
+
+export const PlayerPanel: React.FC<PlayerPanelProps> = ({ refreshTrigger }) => {
     const [activeTab, setActiveTab] = useState<'stats' | 'inventory'>('stats');
     const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(null);
 
-    // Récupère le premier personnage au chargement
+    // Récupère le dernier personnage au chargement et quand refreshTrigger change
     useEffect(() => {
+        console.log('🔄 PlayerPanel refreshing... trigger:', refreshTrigger);
+
         characterService.getAll().then(characters => {
+            console.log('📦 Fetched characters:', characters.length);
             if (characters.length > 0) {
-                setSelectedCharacterId(characters[0].id);
+                const latestCharacter = characters[0];
+                console.log('✅ Selected character:', latestCharacter.name, latestCharacter.id);
+                setSelectedCharacterId(latestCharacter.id);
             }
         });
-    }, []);
+    }, [refreshTrigger]);
 
     return (
         <div className="h-full flex flex-col bg-gray-900">
@@ -43,7 +52,13 @@ export const PlayerPanel: React.FC = () => {
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto">
-                {activeTab === 'stats' && <PlayerStats characterId={selectedCharacterId} />}
+                {/* Ajout de key pour forcer le remount de PlayerStats */}
+                {activeTab === 'stats' && (
+                    <PlayerStats
+                        key={selectedCharacterId}
+                        characterId={selectedCharacterId}
+                    />
+                )}
                 {activeTab === 'inventory' && <PlayerInventory />}
             </div>
         </div>
@@ -53,6 +68,11 @@ export const PlayerPanel: React.FC = () => {
 // Composant Stats connecté à la DB
 const PlayerStats: React.FC<{ characterId: string | null }> = ({ characterId }) => {
     const { character, loading, error } = useCharacter(characterId || undefined);
+
+    useEffect(() => {
+        console.log('📊 PlayerStats rendered with characterId:', characterId);
+        console.log('📊 Character ', character);
+    }, [characterId, character]);
 
     if (loading) {
         return (
@@ -72,9 +92,12 @@ const PlayerStats: React.FC<{ characterId: string | null }> = ({ characterId }) 
 
     if (!character) {
         return (
-            <div className="p-4 text-center text-gray-400">
+            <div className="p-4 text-center text-gray-400 space-y-2">
+                <p className="text-4xl">🏴‍☠️</p>
                 <p>Aucun personnage trouvé</p>
-                <p className="text-xs mt-2">Créez votre premier personnage!</p>
+                <p className="text-xs mt-2">
+                    Tape <code className="bg-gray-800 px-2 py-1 rounded">/create</code> dans le chat
+                </p>
             </div>
         );
     }
@@ -134,16 +157,16 @@ const PlayerStats: React.FC<{ characterId: string | null }> = ({ characterId }) 
                 <h4 className="font-semibold text-sm mb-2 text-gray-300">Attributs</h4>
                 <div className="space-y-1.5 text-sm">
                     <div className="flex justify-between">
-                        <span className="text-gray-400">Force</span>
-                        <span>{character.strength}</span>
+                        <span className="text-gray-400">⚔️ Force</span>
+                        <span className="font-medium">{character.strength}</span>
                     </div>
                     <div className="flex justify-between">
-                        <span className="text-gray-400">Agilité</span>
-                        <span>{character.agility}</span>
+                        <span className="text-gray-400">⚡ Agilité</span>
+                        <span className="font-medium">{character.agility}</span>
                     </div>
                     <div className="flex justify-between">
-                        <span className="text-gray-400">Intelligence</span>
-                        <span>{character.intelligence}</span>
+                        <span className="text-gray-400">🧠 Intelligence</span>
+                        <span className="font-medium">{character.intelligence}</span>
                     </div>
                 </div>
             </div>
@@ -151,7 +174,7 @@ const PlayerStats: React.FC<{ characterId: string | null }> = ({ characterId }) 
     );
 };
 
-// Composant Inventaire (inchangé pour l'instant)
+// Composant Inventaire
 const PlayerInventory: React.FC = () => {
     return (
         <div className="p-4 space-y-4">
