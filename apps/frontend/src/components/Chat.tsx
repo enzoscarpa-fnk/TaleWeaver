@@ -8,7 +8,7 @@ interface ChatProps {
 
 export const Chat: React.FC<ChatProps> = ({ chatHook }) => {
     const [input, setInput] = useState('');
-    const { messages, context, loading, error, sendMessage } = chatHook;
+    const { messages, loading, error, sendMessage } = chatHook;
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -22,51 +22,18 @@ export const Chat: React.FC<ChatProps> = ({ chatHook }) => {
         setInput('');
     };
 
-    // Badge de contexte
-    const getContextBadge = () => {
-        switch (context.type) {
-            case 'character-creation':
-                return (
-                    <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-medium">
-                        📝 Création - {context.step}
-                    </span>
-                );
-            case 'exploration':
-                return (
-                    <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium">
-                        🗺️ Exploration
-                    </span>
-                );
-            case 'combat':
-                return (
-                    <span className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-medium">
-                        ⚔️ Combat
-                    </span>
-                );
-            default:
-                return (
-                    <span className="bg-gray-600 text-white px-3 py-1 rounded-full text-xs font-medium">
-                        💬 Prêt à l'aventure
-                    </span>
-                );
-        }
-    };
-
     return (
         <div className="h-full flex flex-col bg-gray-900">
-            {/* Header avec badge */}
-            <div className="bg-gray-800 border-b border-gray-700 px-4 py-3 flex items-center justify-between">
-                <h1 className="text-xl font-bold text-white">🏴‍☠️ TaleWeaver</h1>
-                {getContextBadge()}
-            </div>
-
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 {messages.length === 0 && (
-                    <div className="text-center text-gray-500 mt-8">
-                        <p className="text-4xl mb-2">🎭</p>
-                        <p className="text-lg mb-1">Bienvenue, aventurier !</p>
-                        <p className="text-sm">Tape <code className="bg-gray-800 px-2 py-1 rounded">/help</code> pour voir les commandes</p>
+                    <div className="text-center text-gray-500 mt-12">
+                        <p className="text-5xl mb-4">🎭</p>
+                        <p className="text-xl mb-2 font-semibold">Bienvenue, aventurier !</p>
+                        <div className="space-y-2 text-sm max-w-md mx-auto">
+                            <p>Tape <code className="bg-gray-800 px-2 py-1 rounded font-mono">/create</code> pour créer ton personnage</p>
+                            <p>Tape <code className="bg-gray-800 px-2 py-1 rounded font-mono">/help</code> pour voir toutes les commandes</p>
+                        </div>
                     </div>
                 )}
 
@@ -82,14 +49,14 @@ export const Chat: React.FC<ChatProps> = ({ chatHook }) => {
                                     : 'bg-gray-800 text-gray-100 border border-gray-700'
                             }`}
                         >
-                            <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                            <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
                         </div>
                     </div>
                 ))}
 
                 {loading && (
                     <div className="flex justify-start">
-                        <div className="bg-gray-800 rounded-lg px-4 py-2 border border-gray-700">
+                        <div className="bg-gray-800 rounded-lg px-4 py-3 border border-gray-700">
                             <div className="flex space-x-2">
                                 <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
                                 <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
@@ -100,7 +67,7 @@ export const Chat: React.FC<ChatProps> = ({ chatHook }) => {
                 )}
 
                 {error && (
-                    <div className="bg-red-600/20 border border-red-600 text-red-400 px-4 py-2 rounded-lg text-sm">
+                    <div className="bg-red-600/20 border border-red-600 text-red-400 px-4 py-3 rounded-lg text-sm">
                         ⚠️ {error}
                     </div>
                 )}
@@ -115,16 +82,26 @@ export const Chat: React.FC<ChatProps> = ({ chatHook }) => {
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder="Tape /create pour créer un personnage, /help pour l'aide..."
+                        placeholder="Écris ton message ou tape une commande (/create, /help)..."
                         disabled={loading}
-                        className="flex-1 bg-gray-700 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                        className="flex-1 bg-gray-700 text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition-all"
                     />
                     <button
                         type="submit"
                         disabled={loading || !input.trim()}
-                        className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white px-6 py-2 rounded-lg font-medium text-sm transition-colors"
+                        className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-lg font-medium text-sm transition-all flex items-center gap-2"
                     >
-                        {loading ? '...' : 'Envoyer'}
+                        {loading ? (
+                            <>
+                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                <span>...</span>
+                            </>
+                        ) : (
+                            <>
+                                <span>Envoyer</span>
+                                <span>→</span>
+                            </>
+                        )}
                     </button>
                 </div>
             </form>

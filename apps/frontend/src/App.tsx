@@ -1,7 +1,6 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { GameLayout } from './layouts/GameLayout';
 import { Dashboard } from './components/Dashboard';
-import { CharacterCreationChat } from './components/CharacterCreation/CharacterCreationChat';
 
 function App() {
     return (
@@ -13,8 +12,11 @@ function App() {
                 {/* Dashboard */}
                 <Route path="/dashboard" element={<Dashboard />} />
 
-                {/* Création de personnage plein écran */}
-                <Route path="/character/create" element={<CharacterCreationChat />} />
+                {/* Redirige l'ancienne route vers la page principale */}
+                <Route path="/character/create" element={<Navigate to="/" replace />} />
+
+                {/* Route 404 - Redirige toute route inconnue vers la page principale */}
+                <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </BrowserRouter>
     );
