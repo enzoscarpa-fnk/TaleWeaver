@@ -16,6 +16,7 @@ export const PlayerPanel: React.FC<PlayerPanelProps> = ({ refreshTrigger }) => {
 
         characterService.getAll().then(characters => {
             console.log('📦 Fetched characters:', characters.length);
+            console.log('📦 All characters:', characters.map(c => c.name));
             if (characters.length > 0) {
                 const latestCharacter = characters[0];
                 console.log('✅ Selected character:', latestCharacter.name, latestCharacter.id);
