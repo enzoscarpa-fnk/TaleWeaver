@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 
 type ChatHook = ReturnType<typeof import('../hooks/useChat').useChat>;
 
@@ -49,7 +50,87 @@ export const Chat: React.FC<ChatProps> = ({ chatHook }) => {
                                     : 'bg-gray-800 text-gray-100 border border-gray-700'
                             }`}
                         >
-                            <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                            {/* Rendu Markdown pour les messages assistant */}
+                            {msg.role === 'assistant' ? (
+                                <div className="prose prose-invert prose-sm max-w-none">
+                                    <ReactMarkdown
+                                        components={{
+                                            // Paragraphes
+                                            p: ({ children }) => (
+                                                <p className="my-2 leading-relaxed text-sm text-gray-100">
+                                                    {children}
+                                                </p>
+                                            ),
+                                            // Gras
+                                            strong: ({ children }) => (
+                                                <strong className="font-bold text-white">
+                                                    {children}
+                                                </strong>
+                                            ),
+                                            // Italique
+                                            em: ({ children }) => (
+                                                <em className="italic text-gray-300">
+                                                    {children}
+                                                </em>
+                                            ),
+                                            // Code inline
+                                            code: ({ children }) => (
+                                                <code className="bg-gray-900 px-1.5 py-0.5 rounded text-blue-400 text-xs font-mono">
+                                                    {children}
+                                                </code>
+                                            ),
+                                            // Listes non ordonnées
+                                            ul: ({ children }) => (
+                                                <ul className="my-2 list-disc pl-4 space-y-1">
+                                                    {children}
+                                                </ul>
+                                            ),
+                                            // Listes ordonnées
+                                            ol: ({ children }) => (
+                                                <ol className="my-2 list-decimal pl-4 space-y-1">
+                                                    {children}
+                                                </ol>
+                                            ),
+                                            // Items de liste
+                                            li: ({ children }) => (
+                                                <li className="text-sm text-gray-100">
+                                                    {children}
+                                                </li>
+                                            ),
+                                            // Titres
+                                            h1: ({ children }) => (
+                                                <h1 className="text-xl font-bold text-white mt-3 mb-2">
+                                                    {children}
+                                                </h1>
+                                            ),
+                                            h2: ({ children }) => (
+                                                <h2 className="text-lg font-bold text-white mt-3 mb-2">
+                                                    {children}
+                                                </h2>
+                                            ),
+                                            h3: ({ children }) => (
+                                                <h3 className="text-base font-bold text-white mt-2 mb-1">
+                                                    {children}
+                                                </h3>
+                                            ),
+                                            // Séparateur horizontal
+                                            hr: () => (
+                                                <hr className="my-4 border-gray-600" />
+                                            ),
+                                            // Bloc de code
+                                            pre: ({ children }) => (
+                                                <pre className="bg-gray-900 p-3 rounded my-2 overflow-x-auto">
+                                                    {children}
+                                                </pre>
+                                            ),
+                                        }}
+                                    >
+                                        {msg.content}
+                                    </ReactMarkdown>
+                                </div>
+                            ) : (
+                                <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                            )}
                         </div>
                     </div>
                 ))}

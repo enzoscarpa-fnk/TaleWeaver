@@ -68,7 +68,7 @@ export class CharacterCreationService {
                 Écris uniquement l'histoire (origines, pourquoi il a pris la mer, motivations).`;
 
             const backstoryResponse = await this.openRouter.chatCompletion({
-                model: 'openai/gpt-4o-mini',
+                model: 'mistralai/mistral-small-creative',
                 messages: [
                     { role: 'system', content: backstorySystemPrompt },
                     { role: 'user', content: backstoryUserPrompt },
@@ -89,7 +89,7 @@ export class CharacterCreationService {
             const nextPrompt = this.getSystemPromptForStep(nextStep, updatedData);
 
             const nextStepResponse = await this.openRouter.chatCompletion({
-                model: 'openai/gpt-4o-mini',
+                model: 'mistralai/mistral-small-creative',
                 messages: [
                     { role: 'system', content: nextPrompt },
                     { role: 'user', content: 'Continue' },
@@ -114,7 +114,7 @@ export class CharacterCreationService {
             console.log('📜 NEXT step prompt:', nextPrompt);
 
             const response = await this.openRouter.chatCompletion({
-                model: 'openai/gpt-4o-mini',
+                model: 'mistralai/mistral-small-creative',
                 messages: [
                     { role: 'system', content: nextPrompt },
                     { role: 'user', content: 'Continue' },
@@ -133,7 +133,7 @@ export class CharacterCreationService {
             console.log('📜 CURRENT step prompt:', systemPrompt);
 
             const response = await this.openRouter.chatCompletion({
-                model: 'openai/gpt-4o-mini',
+                model: 'mistralai/mistral-small-creative',
                 messages: [
                     { role: 'system', content: systemPrompt },
                     { role: 'user', content: userMessage },
