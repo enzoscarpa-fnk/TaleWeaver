@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CharacterCreationService } from '../characters/character-creation.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { OpenRouterService } from '../openrouter/openrouter.service';
+import { AI_MODELS, AI_TEMPERATURES } from '../config/ai-models.config';
 
 @Injectable()
 export class ChatService {
@@ -77,15 +78,13 @@ export class ChatService {
         // Commande d'aide
         if (cmd === '/help' || cmd === '/aide') {
             return {
-                aiMessage: `⚓ **Commandes disponibles :**
-
-                - \`/create\` ou \`/créer\` : Créer un personnage
-                - \`/quit\` ou \`/quitter\` : Quitter le contexte actuel
-                - \`/help\` ou \`/aide\` : Afficher cette aide
-                
-                **🎮 Comment jouer :**
-                Si tu n'as pas encore de personnage, commence par \`/create\`.
-                Sinon, parle normalement pour interagir avec le monde !`,
+                aiMessage: '⚓ **Commandes disponibles :**\n\n' +
+                '- \`/create\` ou \`/créer\` : Créer un personnage\n' +
+                '- \`/quit\` ou \`/quitter\` : Quitter le contexte actuel\n' +
+                '- \`/help\` ou \`/aide\` : Afficher cette aide\n\n' +
+                '**🎮 Comment jouer :**\n' +
+                'Si tu n\'as pas encore de personnage, commence par \`/create\`.\n' +
+                'Sinon, parle normalement pour interagir avec le monde !',
                 context: currentContext,
                 extractedData: {},
             };
@@ -110,11 +109,9 @@ export class ChatService {
             const character = characters[0];
 
             return {
-                aiMessage: `**Bienvenue à bord, ${character.name} !** 🏴‍☠️
-
-                Ta légende commence ici, dans les eaux tumultueuses des Caraïbes. Ton navire tangue doucement au port, l'équipage attend tes ordres.
-                
-                Que veux-tu faire ?`,
+                aiMessage: '**Bienvenue à bord, ${character.name} !** 🏴‍☠️\n' +
+                'Ta légende commence ici, dans les eaux tumultueuses des Caraïbes. Ton navire tangue doucement au port, l\'équipage attend tes ordres.\n' +
+                'Que veux-tu faire ?',
                 context: {
                     type: 'game',
                     characterId: character.id,
@@ -124,16 +121,14 @@ export class ChatService {
         } else {
             // Sinon, propose de créer un personnage
             return {
-                aiMessage: `⚓ **Bienvenue dans TaleWeaver !**
-
-                Dans ce jeu de rôle pirate, tu incarnes un flibustier intrépide naviguant sur les sept mers. Explore des îles mystérieuses, affronte des dangers et forge ta légende !
-                
-                **📜 Les bases :**
-                - Crée ton personnage avec ses compétences uniques
-                - Explore le monde en parlant naturellement au maître du jeu
-                - Tes choix déterminent ton destin
-                
-                Pour commencer ton aventure, tape \`/create\` pour créer ton personnage ! 🏴‍☠️`,
+                aiMessage: '⚓ **Bienvenue dans TaleWeaver !**\n\n' +
+                'Dans ce jeu de rôle pirate, tu incarnes un flibustier intrépide naviguant sur les sept mers.\n' +
+                'Explore des îles mystérieuses, affronte des dangers et forge ta légende !\n\n' +
+                '**📜 Les bases :**\n' +
+                '- Crée ton personnage avec ses compétences uniques\n' +
+                '- Explore le monde en parlant naturellement au maître du jeu\n' +
+                '- Tes choix déterminent ton destin\n\n' +
+                'Pour commencer ton aventure, tape \`/create\` pour créer ton personnage ! 🏴‍☠️',
                 context: { type: 'welcome' },
                 extractedData: {},
             };
@@ -214,7 +209,6 @@ export class ChatService {
     }
 
     private async handleGame(sessionId: string, message: string, context: any) {
-        // Récupère le personnage du joueur
         const character = await this.prisma.character.findUnique({
             where: { id: context.characterId },
         });
@@ -227,22 +221,17 @@ export class ChatService {
             };
         }
 
-        // Récupère les messages
         const recentMessages = await this.prisma.message.findMany({
-            where: {
-                sessionId: sessionId,
-            },
+            where: { sessionId: sessionId },
             orderBy: { createdAt: 'desc' },
             take: 10,
         });
 
-        // Construit l'historique pour le contexte
         const conversationHistory = recentMessages
             .reverse()
             .map(m => `${m.role === 'user' ? 'Joueur' : 'MJ'}: ${m.content}`)
             .join('\n');
 
-        // Système de prompt pour le jeu
         const systemPrompt = `Tu es un maître du jeu pour un RPG pirate immersif et épique.
 
         **Personnage du joueur :**
@@ -272,12 +261,12 @@ export class ChatService {
 
         try {
             const response = await this.openRouter.chatCompletion({
-                model: 'mistralai/mistral-small-creative',
+                model: AI_MODELS.NARRATION, // Mistral Creative pour narration
                 messages: [
                     { role: 'system', content: systemPrompt },
                     { role: 'user', content: message },
                 ],
-                temperature: 0.8,
+                temperature: AI_TEMPERATURES.CREATIVE, // 0.8
                 max_tokens: 500,
             });
 

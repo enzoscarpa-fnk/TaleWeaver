@@ -27,13 +27,57 @@ export const Chat: React.FC<ChatProps> = ({ chatHook }) => {
         <div className="h-full flex flex-col bg-gray-900">
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                {/* Message de bienvenue enrichi */}
                 {messages.length === 0 && (
-                    <div className="text-center text-gray-500 mt-12">
-                        <p className="text-5xl mb-4">🎭</p>
-                        <p className="text-xl mb-2 font-semibold">Bienvenue, aventurier !</p>
-                        <div className="space-y-2 text-sm max-w-md mx-auto">
-                            <p>Tape <code className="bg-gray-800 px-2 py-1 rounded font-mono">/create</code> pour créer ton personnage</p>
-                            <p>Tape <code className="bg-gray-800 px-2 py-1 rounded font-mono">/help</code> pour voir toutes les commandes</p>
+                    <div className="text-center mt-12">
+                        <p className="text-5xl mb-4">🏴‍☠️</p>
+                        <div className="max-w-lg mx-auto bg-gray-800 rounded-lg p-6 border border-gray-700 space-y-4">
+                            <h2 className="text-2xl font-bold text-white">Bienvenue dans TaleWeaver !</h2>
+
+                            <p className="text-sm text-gray-300 leading-relaxed">
+                                Dans ce jeu de rôle pirate, tu incarnes un flibustier intrépide naviguant sur les sept mers.
+                                Explore des îles mystérieuses, affronte des dangers et forge ta légende !
+                            </p>
+
+                            <div className="bg-gray-900 rounded-lg p-4 text-left">
+                                <p className="font-semibold text-blue-400 mb-2">📜 Les bases :</p>
+                                <ul className="text-sm text-gray-400 space-y-1.5 list-none">
+                                    <li className="flex items-start gap-2">
+                                        <span className="text-blue-500">•</span>
+                                        <span>Crée ton personnage avec ses compétences uniques</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <span className="text-blue-500">•</span>
+                                        <span>Explore le monde en parlant naturellement au maître du jeu</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <span className="text-blue-500">•</span>
+                                        <span>Tes choix déterminent ton destin</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div className="pt-2 border-t border-gray-700">
+                                <p className="text-sm text-gray-300 mb-3">
+                                    Pour commencer ton aventure :
+                                </p>
+                                <div className="flex flex-col gap-2">
+                                    <button
+                                        onClick={() => sendMessage('/create')}
+                                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                                    >
+                                        <span>✨</span>
+                                        <span>Créer mon personnage</span>
+                                    </button>
+                                    <button
+                                        onClick={() => sendMessage('/help')}
+                                        className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2.5 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                                    >
+                                        <span>❓</span>
+                                        <span>Voir les commandes</span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}
