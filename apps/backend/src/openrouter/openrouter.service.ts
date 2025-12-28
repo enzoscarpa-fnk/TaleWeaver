@@ -29,7 +29,7 @@ interface UsageData {
 export class OpenRouterService {
     private readonly apiKey: string;
     private readonly apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
-    private readonly defaultModel = 'openai/gpt-4o-mini';
+    private readonly defaultModel = 'mistralai/mistral-small-creative';
 
     constructor(
         private configService: ConfigService,
@@ -169,7 +169,7 @@ export class OpenRouterService {
 
     private calculateCost(model: string, usage: UsageData): number {
         const pricing: Record<string, { prompt: number; completion: number }> = {
-            'openai/gpt-4o-mini': {
+            'mistralai/mistral-small-creative': {
                 prompt: 0.00015 / 1000,
                 completion: 0.0006 / 1000,
             },
@@ -179,7 +179,7 @@ export class OpenRouterService {
             },
         };
 
-        const modelPricing = pricing[model] || pricing['openai/gpt-4o-mini'];
+        const modelPricing = pricing[model] || pricing['mistralai/mistral-small-creative'];
 
         return (
             (usage.prompt_tokens ?? 0) * modelPricing.prompt +
