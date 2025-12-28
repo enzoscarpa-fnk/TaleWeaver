@@ -4,16 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e3a03b48-8e41-48b3-8ed7-33f1ad118e06" name="Changes" comment="Added basic UI">
-      <change afterPath="$PROJECT_DIR$/apps/backend/src/conversations/conversations.controller.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/backend/src/conversations/conversations.module.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/backend/src/conversations/conversations.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/backend/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/prisma/schema.prisma" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/backend/src/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/app.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/backend/src/openrouter/openrouter.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/openrouter/openrouter.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/frontend/src/hooks/useChat.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/frontend/src/hooks/useChat.ts" afterDir="false" />
-    </list>
+    <list default="true" id="e3a03b48-8e41-48b3-8ed7-33f1ad118e06" name="Changes" comment="Added Character to prisma schema + CRUD API" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -22,7 +13,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="features/basic-ui" />
+        <entry key="$PROJECT_DIR$" value="features/conversationcontext-record-DB" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -63,7 +54,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;features/conversationcontext-record-DB&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;features/character-crud-system&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -76,10 +67,10 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/apps/backend" />
-      <recent name="$PROJECT_DIR$/apps/backend/src" />
-      <recent name="$PROJECT_DIR$/apps/backend/src/openrouter/prisma" />
       <recent name="$PROJECT_DIR$/apps/frontend/src" />
+      <recent name="$PROJECT_DIR$/apps/backend/src" />
+      <recent name="$PROJECT_DIR$/apps/backend" />
+      <recent name="$PROJECT_DIR$/apps/backend/src/openrouter/prisma" />
     </key>
   </component>
   <component name="SharedIndexes">
@@ -100,7 +91,8 @@
       <workItem from="1764172129382" duration="5241000" />
       <workItem from="1764177717936" duration="10785000" />
       <workItem from="1764773962518" duration="13982000" />
-      <workItem from="1765464125982" duration="9240000" />
+      <workItem from="1765464125982" duration="24538000" />
+      <workItem from="1765646715103" duration="473000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />
@@ -142,7 +134,23 @@
       <option name="project" value="LOCAL" />
       <updated>1765207016728</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Added conversation record and hydration">
+      <option name="closed" value="true" />
+      <created>1765530204901</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1765530204901</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Added Character to prisma schema + CRUD API">
+      <option name="closed" value="true" />
+      <created>1765646896406</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1765646896406</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -181,6 +189,8 @@
     <MESSAGE value="Finished basic integration of OpenRouter API and chat module with GPT-4o Mini." />
     <MESSAGE value="Added dashboard to track costs" />
     <MESSAGE value="Added basic UI" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added basic UI" />
+    <MESSAGE value="Added conversation record and hydration" />
+    <MESSAGE value="Added Character to prisma schema + CRUD API" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added Character to prisma schema + CRUD API" />
   </component>
 </project>
