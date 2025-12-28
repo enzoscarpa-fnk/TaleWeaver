@@ -57,27 +57,35 @@ export class OpenRouterService {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
+                console.error('OpenRouter API error response:', errorData);
                 throw new HttpException(
                     errorData || 'OpenRouter API error',
-                    response.status
+                    response.status,
                 );
             }
 
             const data = await response.json();
 
-            // Sauvegarder l'usage dans la DB
+            const lastUserMessage = request.messages
+                .slice()
+                .reverse()
+                .find((m) => m.role === 'user');
+
             if (data.usage && request.sessionId) {
-                await this.saveUsage(data, model, request.sessionId);
+                await this.saveUsage(data, model, request.sessionId, lastUserMessage);
             }
 
             return data;
         } catch (error) {
+            // 🔥 Ajoute ce log
+            console.error('chatCompletion internal error:', error);
+
             if (error instanceof HttpException) {
                 throw error;
             }
             throw new HttpException(
                 'Unexpected error',
-                HttpStatus.INTERNAL_SERVER_ERROR
+                HttpStatus.INTERNAL_SERVER_ERROR,
             );
         }
     }
@@ -86,60 +94,86 @@ export class OpenRouterService {
         apiResponse: any,
         model: string,
         sessionId: string,
+        lastUserMessage?: Message,
     ): Promise<void> {
-        const usage = apiResponse.usage;
-        const message = apiResponse.choices[0]?.message;
+        console.log('saveUsage called with sessionId =', sessionId);
 
-        if (!message || !usage) return;
+        const usage: UsageData | undefined = apiResponse.usage;
+        const assistantMsg = apiResponse.choices?.[0]?.message;
 
-        // Calculer les coûts
-        const totalCost = usage.total_cost || this.calculateCost(model, usage);
+        if (!usage || !assistantMsg) {
+            console.warn('saveUsage: missing usage or assistantMsg', { usage, assistantMsg });
+            return;
+        }
 
-        // Créer ou récupérer la session
-        await this.prisma.chatSession.upsert({
+        const totalCost =
+            usage.total_cost ?? this.calculateCost(model, usage);
+
+        // 1) Créer ou récupérer la conversation (Conversation/chat_sessions)
+        await this.prisma.conversation.upsert({
             where: { id: sessionId },
             update: {},
-            create: { id: sessionId },
+            create: {
+                id: sessionId,
+                title: 'Aventure TaleWeaver',
+            },
         });
 
-        // Sauvegarder le message
+        // 2) Sauvegarder le message USER (sans coût)
+        if (lastUserMessage) {
+            await this.prisma.message.create({
+            data: {
+                sessionId,
+                    role: lastUserMessage.role,
+                content: lastUserMessage.content,
+                model,
+                promptTokens: 0,
+                completionTokens: 0,
+                totalTokens: 0,
+                promptCost: 0,
+                completionCost: 0,
+                totalCost: 0,
+            },
+        });
+        }
+
+        // 3) Sauvegarder le message ASSISTANT (avec usage + coût)
         await this.prisma.message.create({
         data: {
             sessionId,
-            role: message.role,
-            content: message.content,
+                role: assistantMsg.role,
+            content: assistantMsg.content,
             model,
             promptTokens: usage.prompt_tokens || 0,
             completionTokens: usage.completion_tokens || 0,
             totalTokens: usage.total_tokens || 0,
-            totalCost,
             promptCost: 0,
             completionCost: 0,
+            totalCost,
         },
     });
 
-        // Mettre à jour les stats quotidiennes
+        // 4) Mettre à jour les stats quotidiennes
         await this.updateDailyStats(model, usage, totalCost);
     }
 
     private calculateCost(model: string, usage: UsageData): number {
-        // Tarifs approximatifs (à mettre à jour selon OpenRouter)
         const pricing: Record<string, { prompt: number; completion: number }> = {
             'openai/gpt-4o-mini': {
-                prompt: 0.00015 / 1000, // $0.15 per 1M tokens
-                completion: 0.0006 / 1000, // $0.60 per 1M tokens
+                prompt: 0.00015 / 1000,
+                completion: 0.0006 / 1000,
             },
             'openai/gpt-4o': {
                 prompt: 0.0025 / 1000,
-                completion: 0.010 / 1000,
+                completion: 0.01 / 1000,
             },
         };
 
         const modelPricing = pricing[model] || pricing['openai/gpt-4o-mini'];
 
         return (
-            usage.prompt_tokens * modelPricing.prompt +
-            usage.completion_tokens * modelPricing.completion
+            (usage.prompt_tokens ?? 0) * modelPricing.prompt +
+            (usage.completion_tokens ?? 0) * modelPricing.completion
         );
     }
 
@@ -161,7 +195,7 @@ export class OpenRouterService {
             },
             update: {
                 totalRequests: { increment: 1 },
-                totalTokens: { increment: usage.total_tokens },
+                totalTokens: { increment: usage.total_tokens || 0 },
                 totalCost: { increment: totalCost },
             },
             create: {
@@ -169,13 +203,13 @@ export class OpenRouterService {
                 date: today,
                 model,
                 totalRequests: 1,
-                totalTokens: usage.total_tokens,
+                totalTokens: usage.total_tokens || 0,
                 totalCost,
             },
         });
     }
 
-    // Méthodes pour le dashboard
+    // Dashboard (inchangé)
     async getUsageStats(startDate: Date, endDate: Date) {
         return this.prisma.usageStats.findMany({
             where: {
@@ -189,12 +223,15 @@ export class OpenRouterService {
     }
 
     async getTotalCost(startDate?: Date, endDate?: Date) {
-        const where = startDate && endDate ? {
-            createdAt: {
-                gte: startDate,
-                lte: endDate,
-            },
-        } : {};
+        const where =
+            startDate && endDate
+                ? {
+                    createdAt: {
+                        gte: startDate,
+                        lte: endDate,
+                    },
+                }
+                : {};
 
         const result = await this.prisma.message.aggregate({
             where,
@@ -213,12 +250,15 @@ export class OpenRouterService {
     }
 
     async getCostByModel(startDate?: Date, endDate?: Date) {
-        const where = startDate && endDate ? {
-            createdAt: {
-                gte: startDate,
-                lte: endDate,
-            },
-        } : {};
+        const where =
+            startDate && endDate
+                ? {
+                    createdAt: {
+                        gte: startDate,
+                        lte: endDate,
+                    },
+                }
+                : {};
 
         return this.prisma.message.groupBy({
             by: ['model'],
