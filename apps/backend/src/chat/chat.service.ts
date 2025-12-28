@@ -165,21 +165,15 @@ export class ChatService {
                 const character = await this.characterCreationService.finalizeCharacter(mergedData);
 
                 return {
-                    aiMessage: `🎉 **Félicitations !** Ton personnage est prêt pour l'aventure !
-
-                    **${character.name}** - ${character.class}
-                    
-                    ⚔️ Force: ${character.strength}
-                    🧠 Intelligence: ${character.intelligence}
-                    ⚡ Agilité: ${character.agility}
-                    
-                    _${character.backstory}_
-                    
-                    ---
-                    
-                    **Que les mers te soient favorables ! 🏴‍☠️**
-                    
-                    Ton navire est amarré au port de Tortuga. L'équipage attend tes ordres, capitaine. Que veux-tu faire ?`,
+                    aiMessage: '🎉 **Félicitations !** Ton personnage est prêt pour l\'aventure !\n\n' +
+                    `**${character.name}**` +' - ' + `${character.class}` + '\n\n' +
+                    '⚔️ Force: ' + `${character.strength}` + '\n' +
+                    '🧠 Intelligence: ' + `${character.intelligence}`+ '\n' +
+                    '⚡ Agilité: ' + `${character.agility}`+ '\n\n' +
+                    `_${character.backstory}_` + '\n\n' +
+                    '---\n\n' +
+                    '**Que les mers te soient favorables ! 🏴‍☠️**\n\n' +
+                    'Ton navire est amarré au port de Tortuga. L\'équipage attend tes ordres, capitaine. Que veux-tu faire ?',
                     context: {
                         type: 'game',
                         characterId: character.id,

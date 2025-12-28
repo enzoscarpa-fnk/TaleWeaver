@@ -26,7 +26,7 @@ export class CharacterCreationService {
     ) {}
 
     /**
-     * 🎭 Génère une réponse narrative immersive
+     * Génère une réponse narrative immersive
      */
     private async getNarrativeResponse(prompt: string, temperature = AI_TEMPERATURES.CREATIVE): Promise<string> {
         const response = await this.openRouter.chatCompletion({
@@ -39,7 +39,7 @@ export class CharacterCreationService {
     }
 
     /**
-     * 🔍 Extrait des données structurées avec haute précision
+     * Extrait des données structurées avec haute précision
      */
     private async extractStructuredData(prompt: string): Promise<string> {
         const response = await this.openRouter.chatCompletion({
@@ -66,7 +66,7 @@ export class CharacterCreationService {
         console.log('💬 User message:', userMessage);
         console.log('📦 Current ', currentStep.data);
 
-        // 🔍 Parsing (avec fallback local si échec)
+        // Parsing (avec fallback local si échec)
         let parsedData: ParsedData = await this.parseUserMessageWithAI(userMessage, currentStep.step, currentStep.data);
 
         // Fallback sur parsing local si l'IA échoue
@@ -83,7 +83,7 @@ export class CharacterCreationService {
         let aiMessage = '';
         let nextStep: string = currentStep.step;
 
-        // 🎭 Traitement backstory générée
+        // Traitement backstory générée
         if (needsAIBackstory && currentStep.step === 'backstory') {
             console.log('🤖 Generating backstory with narrative AI');
 
@@ -108,7 +108,7 @@ export class CharacterCreationService {
             console.log('🤖 Combined message:', aiMessage);
 
         } else if (shouldAdvance) {
-            // ✅ Données parsées, génère le prompt du prochain step
+            // Données parsées, génère le prompt du prochain step
             console.log('➡️ Data extracted, advancing to next step');
             nextStep = this.getNextStep(currentStep.step);
 
@@ -120,7 +120,7 @@ export class CharacterCreationService {
             console.log('🤖 AI response for NEXT step:', aiMessage);
 
         } else {
-            // ⚠️ Rien parsé, reste sur le step actuel
+            // Rien parsé, reste sur le step actuel
             console.log('⚠️ Nothing parsed, staying on current step');
 
             const currentPrompt = this.buildNarrativePromptForStep(currentStep.step, currentStep.data);
@@ -142,7 +142,7 @@ export class CharacterCreationService {
     }
 
     /**
-     * 🔍 Parse avec IA (GPT-4o pour précision)
+     * Parse avec IA (GPT-4o pour précision)
      */
     private async parseUserMessageWithAI(userMessage: string, step: string, data?: any): Promise<ParsedData> {
         const extractionPrompts = {
@@ -199,7 +199,7 @@ export class CharacterCreationService {
     }
 
     /**
-     * 📝 Parser local (fallback si l'IA échoue)
+     * Parser local (fallback si l'IA échoue)
      */
     private parseUserMessageLocal(userMessage: string, step: string): ParsedData {
         const content = userMessage.toLowerCase();
@@ -320,9 +320,9 @@ export class CharacterCreationService {
                 
                 Sois chaleureux et encourage sa créativité (2-3 phrases).`,
 
-            stats: `${data?.name} le ${data?.class}, il est temps de répartir tes 15 points !
+            stats: `Tu es un maître du jeu RPG. ${data?.name} le ${data?.class}, doit définir ses attributs.
 
-                Répartis-les entre Force, Intelligence et Agilité.
+                Demande-lui de répartir 15 points entre Force, Intelligence et Agilité.
                 
                 Formats acceptés :
                 - "Force: 7, Intelligence: 5, Agilité: 3"
