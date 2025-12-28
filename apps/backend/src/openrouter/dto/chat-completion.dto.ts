@@ -1,4 +1,4 @@
-import { IsArray, IsString, IsIn, ValidateNested, IsOptional } from 'class-validator';
+import { IsArray, IsString, IsIn, ValidateNested, IsOptional, IsNumber, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class MessageDto {
@@ -22,5 +22,34 @@ export class ChatCompletionDto {
 
     @IsOptional()
     @IsString()
-    sessionId?: string; // Ajouter sessionId
+    sessionId?: string;
+
+    @IsOptional()
+    @IsNumber()
+    @Min(0)
+    @Max(2)
+    temperature?: number;
+
+    @IsOptional()
+    @IsNumber()
+    @Min(1)
+    max_tokens?: number;
+
+    @IsOptional()
+    @IsNumber()
+    @Min(0)
+    @Max(2)
+    top_p?: number;
+
+    @IsOptional()
+    @IsNumber()
+    @Min(-2)
+    @Max(2)
+    frequency_penalty?: number;
+
+    @IsOptional()
+    @IsNumber()
+    @Min(-2)
+    @Max(2)
+    presence_penalty?: number;
 }

@@ -1,8 +1,12 @@
 import { Module } from '@nestjs/common';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { OpenRouterModule } from './openrouter/openrouter.module';
 import { ConversationsModule } from './conversations/conversations.module';
+import { CharactersModule } from './characters/characters.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
     imports: [
@@ -13,6 +17,10 @@ import { ConversationsModule } from './conversations/conversations.module';
         PrismaModule,
         OpenRouterModule,
         ConversationsModule,
+        CharactersModule,
+        ChatModule,
     ],
+    controllers: [AppController],
+    providers: [AppService],
 })
 export class AppModule {}
