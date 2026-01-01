@@ -75,3 +75,16 @@ model Character {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Memory {
+  id        String   @id @default(uuid())
+  sessionId String // Lié à la conversation
+  type      String // NARRATIVE, NPC_INTERACTION, PLAYER_ACTION
+  content   String // Description textuelle de l'événement
+  embedding String // JSON stringifié du vecteur
+  timestamp DateTime @default(now())
+  metadata  String? // JSON optionnel {npcId?, location?, questId?}
+
+  @@index([sessionId])
+  @@index([timestamp])
+}

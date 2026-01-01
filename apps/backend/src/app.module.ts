@@ -7,6 +7,7 @@ import { OpenRouterModule } from './openrouter/openrouter.module';
 import { ConversationsModule } from './conversations/conversations.module';
 import { CharactersModule } from './characters/characters.module';
 import { ChatModule } from './chat/chat.module';
+import { EmbeddingsModule } from "./embeddings/embeddings.module";
 
 @Module({
     imports: [
@@ -19,6 +20,7 @@ import { ChatModule } from './chat/chat.module';
         ConversationsModule,
         CharactersModule,
         ChatModule,
+        EmbeddingsModule,
     ],
     controllers: [AppController],
     providers: [AppService],

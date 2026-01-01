@@ -3,6 +3,7 @@ import { CharacterCreationService } from '../characters/character-creation.servi
 import { PrismaService } from '../prisma/prisma.service';
 import { OpenRouterService } from '../openrouter/openrouter.service';
 import { AI_MODELS, AI_TEMPERATURES } from '../config/ai-models.config';
+import { EmbeddingsService } from "../embeddings/embeddings.service";
 
 @Injectable()
 export class ChatService {
@@ -10,6 +11,7 @@ export class ChatService {
         private characterCreationService: CharacterCreationService,
         private prisma: PrismaService,
         private openRouter: OpenRouterService,
+        private embeddingsService: EmbeddingsService
     ) {}
 
     async processMessage(sessionId: string, message: string, context: any) {
