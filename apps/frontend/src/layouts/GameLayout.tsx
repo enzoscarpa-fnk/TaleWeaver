@@ -4,9 +4,12 @@ import { Chat } from '../components/Chat';
 import { GameInfo } from '../components/GameInfo';
 import { Link } from 'react-router-dom';
 import { useChat } from '../hooks/useChat';
+import { UserMenu } from '../components/UserMenu';
+import { useAuth } from '../contexts/AuthContext';
 
 export const GameLayout: React.FC = () => {
     const chatHook = useChat();
+    const { isAdmin } = useAuth();
 
     // Badge de contexte
     const getContextBadge = () => {
@@ -67,13 +70,17 @@ export const GameLayout: React.FC = () => {
 
                         {/* Actions */}
                         <div className="flex items-center gap-2">
-                            <Link
-                                to="/dashboard"
-                                className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
-                            >
-                                <span>📊</span>
-                                <span>Stats API</span>
-                            </Link>
+                            {/* Bouton Dashboard - visible uniquement pour les admins */}
+                            {isAdmin && (
+                                <Link
+                                    to="/dashboard"
+                                    className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                                >
+                                    <span>📊</span>
+                                    <span>Stats API</span>
+                                </Link>
+                            )}
+                            <UserMenu />
                         </div>
                     </div>
                 </header>

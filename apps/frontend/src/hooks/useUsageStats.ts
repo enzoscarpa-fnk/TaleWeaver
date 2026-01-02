@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 interface TotalStats {
     totalCost: number;
@@ -37,32 +40,21 @@ export const useUsageStats = (startDate?: Date, endDate?: Date) => {
             setError(null);
 
             try {
-                const params = new URLSearchParams();
-                if (startDate) params.append('startDate', startDate.toISOString());
-                if (endDate) params.append('endDate', endDate.toISOString());
-                const queryParams = params.toString();
-
-                const [totalRes, modelRes, dailyRes] = await Promise.all([
-                    fetch(`http://localhost:3001/api/chat/stats/total?${queryParams}`),
-                    fetch(`http://localhost:3001/api/chat/stats/by-model?${queryParams}`),
-                    fetch(`http://localhost:3001/api/chat/stats/daily?${queryParams}`),
-                ]);
-
-                if (!totalRes.ok || !modelRes.ok || !dailyRes.ok) {
-                    throw new Error('Failed to fetch stats');
-                }
+                const params: any = {};
+                if (startDate) params.startDate = startDate.toISOString();
+                if (endDate) params.endDate = endDate.toISOString();
 
                 const [total, model, daily] = await Promise.all([
-                    totalRes.json(),
-                    modelRes.json(),
-                    dailyRes.json(),
+                    axios.get(`${API_URL}/api/chat/stats/total`, { params, withCredentials: true }),
+                    axios.get(`${API_URL}/api/chat/stats/by-model`, { params, withCredentials: true }),
+                    axios.get(`${API_URL}/api/chat/stats/daily`, { params, withCredentials: true }),
                 ]);
 
-                setTotalStats(total);
-                setModelStats(model);
-                setDailyStats(daily);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : 'Error fetching stats');
+                setTotalStats(total.data);
+                setModelStats(model.data);
+                setDailyStats(daily.data);
+            } catch (err: any) {
+                setError(err.response?.data?.message || err.message || 'Erreur lors du chargement des statistiques');
                 console.error('Stats error:', err);
             } finally {
                 setLoading(false);
