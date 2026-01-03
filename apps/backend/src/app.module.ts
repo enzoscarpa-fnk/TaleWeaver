@@ -8,6 +8,7 @@ import { ConversationsModule } from './conversations/conversations.module';
 import { CharactersModule } from './characters/characters.module';
 import { ChatModule } from './chat/chat.module';
 import { EmbeddingsModule } from "./embeddings/embeddings.module";
+import { GameStateModule } from './game-state/game-state.module';
 
 @Module({
     imports: [
@@ -21,6 +22,7 @@ import { EmbeddingsModule } from "./embeddings/embeddings.module";
         CharactersModule,
         ChatModule,
         EmbeddingsModule,
+        GameStateModule,
     ],
     controllers: [AppController],
     providers: [AppService],

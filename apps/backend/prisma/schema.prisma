@@ -14,6 +14,8 @@ model Conversation {
   updatedAt DateTime  @updatedAt
   messages  Message[]
 
+  gameSession GameSession?
+
   @@index([userId])
 }
 
@@ -74,6 +76,8 @@ model Character {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  gameSessions GameSession[]
 }
 
 model Memory {
@@ -87,4 +91,112 @@ model Memory {
 
   @@index([sessionId])
   @@index([timestamp])
+}
+
+model GameSession {
+  id             String       @id @default(cuid())
+  conversationId String       @unique
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id])
+
+  // États du jeu
+  currentLocation String @default("Port de Tortuga")
+  gold            Int    @default(100)
+  reputation      Int    @default(0)
+
+  // Combat actif ?
+  combat Combat?
+
+  // Quêtes
+  quests Quest[]
+
+  // Inventaire
+  inventory InventoryItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([characterId])
+}
+
+model Combat {
+  id        String      @id @default(cuid())
+  sessionId String      @unique
+  session   GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  isActive    Boolean @default(true)
+  currentTurn Int     @default(1)
+
+  // Stats du joueur pendant le combat
+  playerHP      Int
+  playerMaxHP   Int
+  playerMana    Int
+  playerMaxMana Int
+
+  // Ennemis (stockés en JSON)
+  enemies String // JSON: [{id, name, hp, maxHp, attack, defense}]
+
+  // Log du combat
+  combatLog String @default("[]") // JSON array
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Quest {
+  id        String      @id @default(cuid())
+  sessionId String
+  session   GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  questId     String // ID unique de la quête (ex: "rescue_merchant")
+  name        String
+  description String
+  status      QuestStatus @default(ACTIVE)
+
+  // Objectifs (JSON)
+  objectives String // JSON: [{id, description, completed: boolean}]
+
+  // Récompenses
+  goldReward Int @default(0)
+  xpReward   Int @default(0)
+
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  @@index([sessionId])
+  @@index([status])
+}
+
+enum QuestStatus {
+  ACTIVE
+  COMPLETED
+  FAILED
+}
+
+model InventoryItem {
+  id        String      @id @default(cuid())
+  sessionId String
+  session   GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  itemId   String // ID unique de l'item (ex: "health_potion")
+  name     String
+  type     ItemType
+  quantity Int      @default(1)
+
+  // Propriétés de l'item (JSON)
+  properties String // JSON: {damage?, healing?, defense?, etc.}
+
+  equippedAt DateTime? // null = dans l'inventaire, date = équipé
+
+  @@index([sessionId])
+}
+
+enum ItemType {
+  WEAPON
+  ARMOR
+  CONSUMABLE
+  QUEST_ITEM
+  MISC
 }

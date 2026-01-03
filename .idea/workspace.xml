@@ -4,19 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e3a03b48-8e41-48b3-8ed7-33f1ad118e06" name="Changes" comment="Fixed UI">
-      <change afterPath="$PROJECT_DIR$/apps/backend/src/embeddings/dto/memory.dto.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/backend/src/embeddings/embeddings.module.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/backend/src/embeddings/embeddings.service.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/backend/src/embeddings/test-embeddings.script.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/backend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/package.json" afterDir="false" />
+    <list default="true" id="e3a03b48-8e41-48b3-8ed7-33f1ad118e06" name="Changes" comment="Added embeddings + tests">
+      <change afterPath="$PROJECT_DIR$/apps/backend/src/game-state/game-state.module.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/backend/src/game-state/game-state.service.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/backend/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/prisma/schema.prisma" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/backend/src/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/app.module.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/backend/src/chat/chat.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/chat/chat.module.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/backend/src/chat/chat.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/chat/chat.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/backend/src/config/ai-models.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/config/ai-models.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -109,7 +103,7 @@
       <workItem from="1765464125982" duration="24538000" />
       <workItem from="1765646715103" duration="71208000" />
       <workItem from="1766397932730" duration="35946000" />
-      <workItem from="1767192866424" duration="5755000" />
+      <workItem from="1767192866424" duration="14432000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />
@@ -263,7 +257,15 @@
       <option name="project" value="LOCAL" />
       <updated>1766929004756</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Added embeddings + tests">
+      <option name="closed" value="true" />
+      <created>1767288968309</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1767288968309</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -316,6 +318,7 @@
     <MESSAGE value="Added game context with steps system" />
     <MESSAGE value="Added welcome message when starting a new game" />
     <MESSAGE value="Fixed UI" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed UI" />
+    <MESSAGE value="Added embeddings + tests" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added embeddings + tests" />
   </component>
 </project>

@@ -5,9 +5,10 @@ import { CharactersModule } from '../characters/characters.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { OpenRouterModule } from '../openrouter/openrouter.module';
 import { EmbeddingsModule } from '../embeddings/embeddings.module';
+import { GameStateModule } from '../game-state/game-state.module';
 
 @Module({
-    imports: [CharactersModule, PrismaModule, OpenRouterModule, EmbeddingsModule],
+    imports: [CharactersModule, PrismaModule, OpenRouterModule, EmbeddingsModule, GameStateModule],
     controllers: [ChatController],
     providers: [ChatService],
 })
