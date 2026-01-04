@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CharacterCreationService } from '../characters/character-creation.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { OpenRouterService } from '../openrouter/openrouter.service';
+import { OpenRouterService, Message as OpenRouterMessage } from '../openrouter/openrouter.service';
 import { AI_MODELS, AI_TEMPERATURES } from '../config/ai-models.config';
 import { EmbeddingsService } from '../embeddings/embeddings.service';
 import { GameStateService } from '../game-state/game-state.service';
@@ -408,21 +408,126 @@ export class ChatService {
 
     private async handleGame(sessionId: string, message: string, context: any) {
         try {
-            // Récupérer le contexte complet du jeu (état structuré + mémoire narrative)
+            // Détecter les questions factuelles
+            const factualQuestions = [
+                { pattern: /où (suis|est|me trouve)/i, type: 'location' },
+                { pattern: /combien.*(?:or|pièces|argent)/i, type: 'gold' },
+                { pattern: /(?:mes|tes) stats?/i, type: 'stats' },
+                { pattern: /(?:mon|ton) inventaire/i, type: 'inventory' },
+            ];
+
+            const matchedQuestion = factualQuestions.find(q => q.pattern.test(message));
+
+            if (matchedQuestion) {
+                const gameContext = await this.gameStateService.getGameContext(sessionId, message);
+
+                switch (matchedQuestion.type) {
+                    case 'location':
+                        return {
+                            aiMessage: `📍 **Tu es actuellement à : ${gameContext.session.currentLocation}**\n\n` +
+                                `Que veux-tu faire ?`,
+                            context: { type: 'game', characterId: gameContext.character.id },
+                            extractedData: {},
+                        };
+                    case 'gold':
+                        return {
+                            aiMessage: `💰 **Tu as ${gameContext.session.gold} pièces d'or.**`,
+                            context: { type: 'game', characterId: gameContext.character.id },
+                            extractedData: {},
+                        };
+                    case 'stats':
+                        return {
+                            aiMessage: `**📊 Statistiques de ${gameContext.character.name}**\n\n` +
+                                `**Niveau :** ${gameContext.character.level} | **XP :** ${gameContext.character.experience}\n` +
+                                `**PV :** ${gameContext.character.health}/${gameContext.character.maxHealth}\n` +
+                                `**Mana :** ${gameContext.character.mana}/${gameContext.character.maxMana}\n\n` +
+                                `**Attributs :**\n` +
+                                `⚔️ Force : ${gameContext.character.strength}\n` +
+                                `🧠 Intelligence : ${gameContext.character.intelligence}\n` +
+                                `⚡ Agilité : ${gameContext.character.agility}\n\n` +
+                                `**Richesse :**\n` +
+                                `💰 Or : ${gameContext.session.gold} pièces\n` +
+                                `⭐ Réputation : ${gameContext.session.reputation}\n\n` +
+                                `**Localisation :** ${gameContext.session.currentLocation}`,
+                            context: { type: 'game', characterId: gameContext.character.id },
+                            extractedData: {},
+                        };
+
+                    case 'inventory':
+                        if (gameContext.inventory.length === 0) {
+                            return {
+                                aiMessage: '🎒 **Ton inventaire est vide.**\n\nPars à l\'aventure pour trouver des objets !',
+                                context: { type: 'game', characterId: gameContext.character.id },
+                                extractedData: {},
+                            };
+                        }
+
+                        const equipped = gameContext.inventory.filter(i => i.equippedAt);
+                        const stored = gameContext.inventory.filter(i => !i.equippedAt);
+
+                        let inventoryText = '🎒 **Ton inventaire**\n\n';
+
+                        if (equipped.length > 0) {
+                            inventoryText += '**🗡️ Équipé :**\n';
+                            equipped.forEach(item => {
+                                inventoryText += `- ${item.name} (${item.type})\n`;
+                            });
+                            inventoryText += '\n';
+                        }
+
+                        if (stored.length > 0) {
+                            inventoryText += '**📦 Sac :**\n';
+                            stored.forEach(item => {
+                                inventoryText += `- ${item.name} x${item.quantity}\n`;
+                            });
+                        }
+
+                        return {
+                            aiMessage: inventoryText,
+                            context: { type: 'game', characterId: gameContext.character.id },
+                            extractedData: {},
+                        };
+                }
+            }
+
+            // Récupérer les 10 derniers messages (5 échanges)
+            const rawMessages = await this.prisma.message.findMany({
+                where: { sessionId },
+                orderBy: { createdAt: 'desc' },
+                take: 10,
+                select: { role: true, content: true },
+            });
+
+            // Normaliser les rôles au type attendu par OpenRouter
+            const recentMessages: OpenRouterMessage[] = rawMessages
+                .reverse()
+                .map((m): OpenRouterMessage => ({
+                    role: m.role === 'user' ? 'user' : 'assistant',
+                    content: m.content,
+                }));
+
+            // Récupérer le contexte complet du jeu
             const gameContext = await this.gameStateService.getGameContext(
                 sessionId,
                 message,
             );
 
-            // Construire le prompt système enrichi
-            const systemPrompt = this.gameStateService.buildSystemPrompt(gameContext);
+            // Construire le prompt système enrichi avec l'historique
+            const systemPrompt = this.gameStateService.buildSystemPrompt(
+                gameContext,
+                recentMessages,
+            );
+
+            // Construire les messages pour l'API avec typage STRICT
+            const apiMessages: OpenRouterMessage[] = [
+                { role: 'system', content: systemPrompt },
+                ...recentMessages,
+                { role: 'user', content: message },
+            ];
 
             const response = await this.openRouter.chatCompletion({
                 model: AI_MODELS.NARRATION,
-                messages: [
-                    { role: 'system', content: systemPrompt },
-                    { role: 'user', content: message },
-                ],
+                messages: apiMessages,
                 temperature: AI_TEMPERATURES.CREATIVE,
                 max_tokens: 600,
             });
@@ -448,7 +553,6 @@ export class ChatService {
         } catch (error) {
             console.error('❌ Game handler error:', error);
 
-            // Fallback si la session de jeu n'existe pas encore
             if (error.message?.includes('Game session not found')) {
                 const character = await this.prisma.character.findUnique({
                     where: { id: context.characterId },

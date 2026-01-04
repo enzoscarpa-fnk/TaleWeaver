@@ -13,7 +13,7 @@ export const AI_MODELS = {
 } as const;
 
 export const AI_TEMPERATURES = {
-    CREATIVE: 0.8,    // Pour narration
+    CREATIVE: 0.7,    // Pour narration
     BALANCED: 0.5,    // Pour dialogue
     PRECISE: 0.1,     // Pour extraction JSON
 } as const;

@@ -132,7 +132,7 @@ export class GameStateService {
     /**
      * Construit le prompt système enrichi pour le modèle de chat
      */
-    buildSystemPrompt(context: GameContext): string {
+    buildSystemPrompt(context: GameContext, recentMessages?: any[]): string {
         const { session, character, combat, activeQuests, inventory, recentMemories } = context;
 
         // Partie 1 : Stats du personnage
@@ -140,23 +140,20 @@ export class GameStateService {
 
             **Personnage : ${character.name}**
             - Classe : ${character.class}
-            - Niveau : ${character.level} | XP : ${character.experience}
             - PV : ${character.health}/${character.maxHealth}
             - Mana : ${character.mana}/${character.maxMana}
             - Force : ${character.strength} | Intelligence : ${character.intelligence} | Agilité : ${character.agility}
             - Or : ${session.gold} pièces
-            - Réputation : ${session.reputation}
-            
-            **Localisation actuelle :** ${session.currentLocation}
+            - Localisation : ${session.currentLocation}
             `;
 
         // Partie 2 : Combat actif
         if (combat?.isActive) {
             const enemies: CombatEnemy[] = JSON.parse(combat.enemies);
-            prompt += `\n**COMBAT EN COURS (Tour ${combat.currentTurn})**
-                - PV du joueur : ${combat.playerHP}/${combat.playerMaxHP}
-                - Ennemis :
-                ${enemies.map(e => `  • ${e.name} (${e.hp}/${e.maxHp} PV)`).join('\n')}
+            prompt += `\n**⚔️ COMBAT EN COURS**
+                RÈGLE : Le joueur combat ${enemies.map(e => e.name).join(', ')}. NE MENTIONNE PAS d'autres personnages.
+                - PV joueur : ${combat.playerHP}/${combat.playerMaxHP}
+                - Ennemis : ${enemies.map(e => `${e.name} (${e.hp}/${e.maxHp} PV)`).join(', ')}
                 `;
         }
 
@@ -191,28 +188,48 @@ export class GameStateService {
             });
         }
 
-        // Partie 5 : Mémoire narrative
-        if (recentMemories.length > 0) {
-            prompt += `\n**Événements pertinents du passé :**\n`;
-            recentMemories.forEach((m, i) => {
-                prompt += `${i + 1}. [${m.type}] ${m.content} (pertinence: ${(m.similarity * 100).toFixed(0)}%)\n`;
+        // Partie 5 - Historique récent des 5 derniers échanges
+        if (recentMessages && recentMessages.length > 0) {
+            prompt += `\n**Historique récent (5 derniers échanges) :**\n`;
+            recentMessages.slice(-10).forEach((msg, i) => { // Prendre les 10 derniers messages (5 échanges)
+                const speaker = msg.role === 'user' ? 'Joueur' : 'MJ';
+                const content = msg.content.substring(0, 150);
+                prompt += `${i + 1}. ${speaker}: ${content}${msg.content.length > 150 ? '...' : ''}\n`;
             });
+            prompt += '\n';
         }
 
-        // Partie 6 : Instructions pour le MJ
-        prompt += `\n**Ton rôle de Maître du Jeu :**
-            - Décris les scènes avec détails immersifs
-            - Tiens compte de l'historique et des stats du personnage
-            - Adapte la difficulté aux compétences du joueur
+        // Partie 6 : Mémoire narrative (événements importants similaires)
+        if (recentMemories.length > 0) {
+            prompt += `**Événements pertinents du passé (similaires à la situation actuelle) :**\n`;
+            recentMemories.forEach((m, i) => {
+                prompt += `${i + 1}. [${m.type}] ${m.content.substring(0, 100)}... (pertinence: ${(m.similarity * 100).toFixed(0)}%)\n`;
+            });
+            prompt += '\n';
+        }
+
+        // Partie 7 : Instructions STRICTES pour le MJ
+        prompt += `**RÈGLES CRITIQUES (À RESPECTER ABSOLUMENT) :**
+            1. **COHÉRENCE SPATIALE** : Le joueur est actuellement à "${session.currentLocation}". Ne le téléporte PAS ailleurs sans raison.
+            2. **PERSONNAGES** : Ne confonds JAMAIS les personnages.
+            3. **CONSÉQUENCES** : Si le joueur fuit, il N'EST PLUS dans le lieu qu'il a quitté (ex: fuit taverne = plus dans la taverne).
+            4. **STATS** : Les PV actuels sont ${character.health}/${character.maxHealth}. Si blessé, mentionne-le dans la narration.
+            5. **INVENTAIRE** : Le joueur a ${storedItems.length} objets en sac. Ne lui fais pas utiliser des objets qu'il n'a pas.
+            
+            **Ton rôle de Maître du Jeu :**
+            - Décris brièvement les scènes avec détails immersifs
+            - Tiens compte de l'historique récent (5 derniers échanges)
+            - Adapte la difficulté aux stats du personnage
             - Propose des choix significatifs
             - Gère les combats, dialogues NPCs, et exploration
             - Récompense la créativité
+            - **LIS L'HISTORIQUE AVANT DE RÉPONDRE** pour éviter les incohérences
             
             **Style narratif :**
             - Ton épique mais accessible
             - Descriptions concises (4-5 phrases max)
             - Utilise Markdown (**gras** pour important, _italique_ pour ambiance)
-            - Emoji occasionnels (⚔️🏴‍☠️🌊💀⚓)
+            - Utilisation des Emoji avec parcimonie (⚔️🏴‍☠️🌊💀⚓)
             `;
 
         return prompt;

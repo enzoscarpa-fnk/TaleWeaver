@@ -92,9 +92,6 @@ export const useChat = () => {
 
         console.log('📤 Sending:', { sessionId, message: content, context });
 
-        // Sauvegarde du contexte précédent pour détecter transition
-        const previousContext = context;
-
         try {
             const response = await fetch('http://localhost:3001/chat/message', {
                 method: 'POST',
@@ -126,10 +123,10 @@ export const useChat = () => {
                 setContext(data.context);
                 console.log('🔄 Context updated:', data.context);
 
-                // Détecte fin de création : passage de 'character-creation' à 'idle'
-                if (previousContext.type === 'character-creation' && data.context.type === 'idle') {
-                    console.log('🎉 Character creation completed! Triggering refresh...');
-                    setCharacterCreated(prev => prev + 1); // Incrémente pour forcer refresh
+                // Détecte le type 'game' avec character présent
+                if (data.context.type === 'game' && data.character) {
+                    console.log('🎉 Character created, triggering refresh...');
+                    setCharacterCreated(prev => prev + 1);
                 }
             }
         } catch (err) {
