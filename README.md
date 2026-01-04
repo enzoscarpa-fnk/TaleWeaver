@@ -25,7 +25,7 @@ An immersive pirate-themed text-based RPG game powered by AI, where you embark o
 - **User Authentication**: Secure login system with role-based access control
 - **Admin Dashboard**: Monitor API usage statistics and manage users (admin only)
 - **Session Management**: Persistent game sessions with conversation history
-- **Real-time Chat Interface**: Beautiful, responsive chat UI with markdown support
+- **Real-time Chat Interface**: Responsive chat UI with markdown support
 
 ## 🛠 Tech Stack
 
