@@ -7,6 +7,8 @@ import { OpenRouterModule } from './openrouter/openrouter.module';
 import { ConversationsModule } from './conversations/conversations.module';
 import { CharactersModule } from './characters/characters.module';
 import { ChatModule } from './chat/chat.module';
+import { EmbeddingsModule } from "./embeddings/embeddings.module";
+import { GameStateModule } from './game-state/game-state.module';
 import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
 
@@ -21,6 +23,8 @@ import { AdminModule } from './admin/admin.module';
         ConversationsModule,
         CharactersModule,
         ChatModule,
+        EmbeddingsModule,
+        GameStateModule,
         AuthModule,
         AdminModule,
     ],

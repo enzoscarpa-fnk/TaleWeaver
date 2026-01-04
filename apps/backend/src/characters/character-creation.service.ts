@@ -94,7 +94,7 @@ export class CharacterCreationService {
                 Écris UNIQUEMENT l'histoire (origines, pourquoi il a pris la mer, motivations).
                 Ton immersif et épique. Commence directement par l'histoire, sans introduction.`;
 
-            parsedData.backstory = await this.getNarrativeResponse(backstoryPrompt, 0.8);
+            parsedData.backstory = await this.getNarrativeResponse(backstoryPrompt, 0.7);
             console.log('🤖 AI generated backstory:', parsedData.backstory);
 
             shouldAdvance = true;

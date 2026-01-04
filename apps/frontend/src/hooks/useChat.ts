@@ -9,6 +9,7 @@ interface GameContext {
     type: string;
     step?: string;
     data?: any;
+    characterId?: string;
 }
 
 const STORAGE_KEY = 'taleweaver_session_id';
@@ -31,6 +32,8 @@ export const useChat = () => {
     const [error, setError] = useState<string | null>(null);
     const [sessionId, setSessionId] = useState<string | null>(null);
     const [characterCreated, setCharacterCreated] = useState(0);
+    const [gameInfoRefresh, setGameInfoRefresh] = useState(0);
+    const [isInitializing, setIsInitializing] = useState(true);
 
     // 1) Initialiser / restaurer le sessionId
     useEffect(() => {
@@ -50,31 +53,41 @@ export const useChat = () => {
             if (!sessionId) return;
 
             try {
-                const res = await fetch(`http://localhost:3001/api/conversations/${sessionId}`);
+                setIsInitializing(true);
 
-                if (!res.ok) {
-                    console.error('Failed to load conversation history:', res.status, res.statusText);
-                    return;
+                let restoredContext = { type: 'idle' };
+                const contextRes = await fetch(`http://localhost:3001/api/conversations/${sessionId}/context`);
+                if (contextRes.ok) {
+                    restoredContext = await contextRes.json();
+                    console.log('🔄 Context restored:', restoredContext);
+                    setContext(restoredContext);
                 }
 
-                const data = await res.json() as {
-                    id: string;
-                    title: string | null;
-                    messages: {
-                        id: string;
-                        role: 'user' | 'assistant' | 'system';
-                        content: string;
-                    }[];
-                };
+                // Charger l'historique des messages
+                const res = await fetch(`http://localhost:3001/api/conversations/${sessionId}`);
 
-                setMessages(
-                    data.messages.map((m) => ({
-                        role: m.role,
-                        content: m.content,
-                    })),
-                );
+                if (res.ok) {
+                    const data = await res.json();
+
+                    // Si data est null, c'est une nouvelle conversation
+                    if (data && data.messages) {
+                        setMessages(
+                            data.messages.map((m: any) => ({
+                                role: m.role,
+                                content: m.content,
+                            })),
+                        );
+                        console.log(`✅ Loaded ${data.messages.length} messages with context: ${restoredContext.type}`);
+                    } else {
+                        console.log('✅ New conversation (no messages yet), context:', restoredContext.type);
+                    }
+                } else {
+                    console.log('✅ New conversation (404), context:', restoredContext.type);
+                }
             } catch (err) {
                 console.error('Failed to load conversation history:', err);
+            } finally {
+                setIsInitializing(false);
             }
         };
 
@@ -91,9 +104,6 @@ export const useChat = () => {
         setMessages((prev) => [...prev, userMessage]);
 
         console.log('📤 Sending:', { sessionId, message: content, context });
-
-        // Sauvegarde du contexte précédent pour détecter transition
-        const previousContext = context;
 
         try {
             const response = await fetch('http://localhost:3001/chat/message', {
@@ -126,10 +136,14 @@ export const useChat = () => {
                 setContext(data.context);
                 console.log('🔄 Context updated:', data.context);
 
-                // Détecte fin de création : passage de 'character-creation' à 'idle'
-                if (previousContext.type === 'character-creation' && data.context.type === 'idle') {
-                    console.log('🎉 Character creation completed! Triggering refresh...');
-                    setCharacterCreated(prev => prev + 1); // Incrémente pour forcer refresh
+                if (data.context.type === 'game' && data.character) {
+                    console.log('🎉 Character created, triggering refresh...');
+                    setCharacterCreated(prev => prev + 1);
+                }
+
+                if (data.context.type === 'game') {
+                    console.log('🔄 Game message sent, refreshing game info...');
+                    setGameInfoRefresh(prev => prev + 1);
                 }
             }
         } catch (err) {
@@ -156,5 +170,7 @@ export const useChat = () => {
         clearMessages,
         sessionId,
         characterCreated,
+        gameInfoRefresh,
+        isInitializing,
     };
 };

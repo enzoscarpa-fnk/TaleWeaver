@@ -2,7 +2,7 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 
-interface Message {
+export interface Message {
     role: 'system' | 'user' | 'assistant';
     content: string;
 }

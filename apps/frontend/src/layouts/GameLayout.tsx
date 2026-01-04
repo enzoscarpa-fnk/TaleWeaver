@@ -92,7 +92,10 @@ export const GameLayout: React.FC = () => {
 
                 {/* Informations de jeu */}
                 <div className="h-[35%] overflow-hidden">
-                    <GameInfo />
+                    <GameInfo
+                        sessionId={chatHook.sessionId}
+                        refreshTrigger={chatHook.gameInfoRefresh}
+                    />
                 </div>
             </main>
         </div>

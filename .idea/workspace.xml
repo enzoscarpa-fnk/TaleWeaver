@@ -4,12 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e3a03b48-8e41-48b3-8ed7-33f1ad118e06" name="Changes" comment="Added game context with steps system">
-      <change afterPath="$PROJECT_DIR$/apps/backend/src/config/ai-models.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/backend/src/characters/character-creation.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/characters/character-creation.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/backend/src/chat/chat.config.ts" beforeDir="false" />
+    <list default="true" id="e3a03b48-8e41-48b3-8ed7-33f1ad118e06" name="Changes" comment="Fixed GameInfo panel, now showing real time information">
       <change beforePath="$PROJECT_DIR$/apps/backend/src/chat/chat.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/chat/chat.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/backend/src/conversations/conversations.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/conversations/conversations.controller.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/frontend/src/components/Chat.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/frontend/src/components/Chat.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/frontend/src/hooks/useChat.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/frontend/src/hooks/useChat.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,7 +18,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="features/character-creation-module" />
+        <entry key="$PROJECT_DIR$" value="features/gamestatemanagement-game-initiation" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -54,25 +53,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "git-widget-placeholder": "features/gamestatemanagement-game-initiation",
-    "javascript.preferred.runtime.type.id": "node",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
-    "ts.external.directory.path": "/Users/fnk/WebstormProjects/taleweaver/apps/frontend/node_modules/typescript/lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;features/embeddings&quot;,
+    &quot;javascript.preferred.runtime.type.id&quot;: &quot;node&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/fnk/WebstormProjects/taleweaver/apps/frontend/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/apps/frontend/src" />
@@ -101,7 +100,8 @@
       <workItem from="1764773962518" duration="13982000" />
       <workItem from="1765464125982" duration="24538000" />
       <workItem from="1765646715103" duration="71208000" />
-      <workItem from="1766397932730" duration="21377000" />
+      <workItem from="1766397932730" duration="35946000" />
+      <workItem from="1767192866424" duration="28933000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />
@@ -239,30 +239,81 @@
       <option name="project" value="LOCAL" />
       <updated>1766785837438</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Added welcome message when starting a new game">
+      <option name="closed" value="true" />
+      <created>1766793953621</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1766793953621</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Fixed UI">
+      <option name="closed" value="true" />
+      <created>1766929004756</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1766929004756</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Added embeddings + tests">
+      <option name="closed" value="true" />
+      <created>1767288968309</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1767288968309</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Added game state service to manage different states of the game (quest, fight, story progression...) using embeddings">
+      <option name="closed" value="true" />
+      <created>1767453281883</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1767453281883</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Fixed model hallucination issues (kinda)">
+      <option name="closed" value="true" />
+      <created>1767543452126</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1767543452126</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Fixed GameInfo panel, now showing real time information">
+      <option name="closed" value="true" />
+      <created>1767546492517</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1767546492517</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="features/gamestatemanagement-game-initiation" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
     <option name="TAB_STATES">
       <map>
         <entry key="MAIN">
           <value>
-            <State>
-              <option name="FILTERS">
-                <map>
-                  <entry key="branch">
-                    <value>
-                      <list>
-                        <option value="features/character-crud-system" />
-                      </list>
-                    </value>
-                  </entry>
-                </map>
-              </option>
-            </State>
+            <State />
           </value>
         </entry>
       </map>
@@ -286,8 +337,13 @@
     <MESSAGE value="Fixed method for the AI generation of the backstory" />
     <MESSAGE value="Fixed the system-prompt to smooth the conversation and correctly parse the information when the user asks the model to generate its character's backstory" />
     <MESSAGE value="Added integration of the character creation process directly in the main chat instead of a separate page, added basic slash commands (/create, /help...)." />
-    <MESSAGE value="Fixed UI" />
     <MESSAGE value="Added game context with steps system" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added game context with steps system" />
+    <MESSAGE value="Added welcome message when starting a new game" />
+    <MESSAGE value="Fixed UI" />
+    <MESSAGE value="Added embeddings + tests" />
+    <MESSAGE value="Added game state service to manage different states of the game (quest, fight, story progression...) using embeddings" />
+    <MESSAGE value="Fixed model hallucination issues (kinda)" />
+    <MESSAGE value="Fixed GameInfo panel, now showing real time information" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed GameInfo panel, now showing real time information" />
   </component>
 </project>
