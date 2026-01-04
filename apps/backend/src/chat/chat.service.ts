@@ -305,6 +305,50 @@ export class ChatService {
         const mergedData = { ...currentData, ...result.extractedData };
         console.log('📦 Merged ', mergedData);
 
+        // Sauvegarder les messages de création de personnage
+        console.log('💾 Saving character creation messages...');
+
+        await this.prisma.conversation.upsert({
+            where: { id: sessionId },
+            update: {},
+            create: {
+                id: sessionId,
+                title: 'Création de personnage',
+            },
+        });
+
+        await this.prisma.message.create({
+            data: {
+                sessionId,
+                role: 'user',
+                content: message,
+                model: AI_MODELS.NARRATION,
+                promptTokens: 0,
+                completionTokens: 0,
+                totalTokens: 0,
+                promptCost: 0,
+                completionCost: 0,
+                totalCost: 0,
+            },
+        });
+
+        await this.prisma.message.create({
+            data: {
+                sessionId,
+                role: 'assistant',
+                content: result.aiMessage,
+                model: AI_MODELS.NARRATION,
+                promptTokens: 0,
+                completionTokens: 0,
+                totalTokens: 0,
+                promptCost: 0,
+                completionCost: 0,
+                totalCost: 0,
+            },
+        });
+
+        console.log('✅ Character creation messages saved');
+
         if (result.nextStep === 'complete') {
             console.log('🎉 Character creation complete, finalizing...');
             console.log('📦 Final character ', mergedData);
@@ -530,9 +574,57 @@ export class ChatService {
                 messages: apiMessages,
                 temperature: AI_TEMPERATURES.CREATIVE,
                 max_tokens: 600,
+                sessionId,
             });
 
             const aiMessage = response.choices[0].message.content;
+
+            // Sauvegarder les messages
+            console.log('💾 Saving messages to DB...');
+
+            // S'assurer que la conversation existe
+            await this.prisma.conversation.upsert({
+                where: { id: sessionId },
+                update: {},
+                create: {
+                    id: sessionId,
+                    title: `Aventure de ${gameContext.character.name}`,
+                },
+            });
+
+            // Sauvegarder le message utilisateur
+            await this.prisma.message.create({
+                data: {
+                    sessionId,
+                    role: 'user',
+                    content: message,
+                    model: AI_MODELS.NARRATION,
+                    promptTokens: 0,
+                    completionTokens: 0,
+                    totalTokens: 0,
+                    promptCost: 0,
+                    completionCost: 0,
+                    totalCost: 0,
+                },
+            });
+
+            // Sauvegarder le message assistant
+            await this.prisma.message.create({
+                data: {
+                    sessionId,
+                    role: 'assistant',
+                    content: aiMessage,
+                    model: AI_MODELS.NARRATION,
+                    promptTokens: response.usage?.prompt_tokens || 0,
+                    completionTokens: response.usage?.completion_tokens || 0,
+                    totalTokens: response.usage?.total_tokens || 0,
+                    promptCost: 0,
+                    completionCost: 0,
+                    totalCost: 0,
+                },
+            });
+
+            console.log('✅ Messages saved successfully');
 
             // Stocker l'interaction comme mémoire narrative
             await this.embeddingsService.storeMemory({

@@ -9,7 +9,7 @@ interface ChatProps {
 
 export const Chat: React.FC<ChatProps> = ({ chatHook }) => {
     const [input, setInput] = useState('');
-    const { messages, loading, error, sendMessage } = chatHook;
+    const { messages, loading, error, sendMessage, isInitializing } = chatHook;
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -22,6 +22,18 @@ export const Chat: React.FC<ChatProps> = ({ chatHook }) => {
         sendMessage(input);
         setInput('');
     };
+
+    // Afficher le loader pendant l'initialisation
+    if (isInitializing) {
+        return (
+            <div className="h-full flex items-center justify-center bg-gray-900">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                    <div className="text-gray-400 text-sm">Chargement de la conversation...</div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="h-full flex flex-col bg-gray-900">
