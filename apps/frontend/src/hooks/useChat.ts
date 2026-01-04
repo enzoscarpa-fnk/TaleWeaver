@@ -31,6 +31,7 @@ export const useChat = () => {
     const [error, setError] = useState<string | null>(null);
     const [sessionId, setSessionId] = useState<string | null>(null);
     const [characterCreated, setCharacterCreated] = useState(0);
+    const [gameInfoRefresh, setGameInfoRefresh] = useState(0);
 
     // 1) Initialiser / restaurer le sessionId
     useEffect(() => {
@@ -128,6 +129,12 @@ export const useChat = () => {
                     console.log('🎉 Character created, triggering refresh...');
                     setCharacterCreated(prev => prev + 1);
                 }
+
+                // Refresh GameInfo après chaque message en jeu
+                if (data.context.type === 'game') {
+                    console.log('🔄 Game message sent, refreshing game info...');
+                    setGameInfoRefresh(prev => prev + 1);
+                }
             }
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Erreur lors de l\'envoi du message';
@@ -153,5 +160,6 @@ export const useChat = () => {
         clearMessages,
         sessionId,
         characterCreated,
+        gameInfoRefresh,
     };
 };

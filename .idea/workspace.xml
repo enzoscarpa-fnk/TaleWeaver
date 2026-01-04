@@ -4,13 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e3a03b48-8e41-48b3-8ed7-33f1ad118e06" name="Changes" comment="Added game state service to manage different states of the game (quest, fight, story progression...) using embeddings">
-      <change beforePath="$PROJECT_DIR$/apps/backend/src/characters/character-creation.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/characters/character-creation.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/backend/src/chat/chat.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/chat/chat.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/backend/src/config/ai-models.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/config/ai-models.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/backend/src/game-state/game-state.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/game-state/game-state.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/backend/src/openrouter/openrouter.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/openrouter/openrouter.service.ts" afterDir="false" />
+    <list default="true" id="e3a03b48-8e41-48b3-8ed7-33f1ad118e06" name="Changes" comment="Fixed model hallucination issues (kinda)">
+      <change afterPath="$PROJECT_DIR$/apps/backend/src/embeddings/embeddings.controller.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/backend/src/game-state/game-state.controller.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/frontend/src/hooks/useGameInfo.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/backend/src/embeddings/embeddings.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/embeddings/embeddings.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/backend/src/game-state/game-state.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/backend/src/game-state/game-state.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/frontend/src/components/GameInfo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/frontend/src/components/GameInfo.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/frontend/src/hooks/useChat.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/frontend/src/hooks/useChat.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/frontend/src/layouts/GameLayout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/frontend/src/layouts/GameLayout.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -103,7 +105,7 @@
       <workItem from="1765464125982" duration="24538000" />
       <workItem from="1765646715103" duration="71208000" />
       <workItem from="1766397932730" duration="35946000" />
-      <workItem from="1767192866424" duration="24130000" />
+      <workItem from="1767192866424" duration="26575000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />
@@ -273,7 +275,15 @@
       <option name="project" value="LOCAL" />
       <updated>1767453281883</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="Fixed model hallucination issues (kinda)">
+      <option name="closed" value="true" />
+      <created>1767543452126</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1767543452126</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -328,6 +338,7 @@
     <MESSAGE value="Fixed UI" />
     <MESSAGE value="Added embeddings + tests" />
     <MESSAGE value="Added game state service to manage different states of the game (quest, fight, story progression...) using embeddings" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added game state service to manage different states of the game (quest, fight, story progression...) using embeddings" />
+    <MESSAGE value="Fixed model hallucination issues (kinda)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed model hallucination issues (kinda)" />
   </component>
 </project>
