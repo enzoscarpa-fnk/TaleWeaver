@@ -9,6 +9,8 @@ import { CharactersModule } from './characters/characters.module';
 import { ChatModule } from './chat/chat.module';
 import { EmbeddingsModule } from "./embeddings/embeddings.module";
 import { GameStateModule } from './game-state/game-state.module';
+import { AuthModule } from './auth/auth.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
     imports: [
@@ -23,6 +25,8 @@ import { GameStateModule } from './game-state/game-state.module';
         ChatModule,
         EmbeddingsModule,
         GameStateModule,
+        AuthModule,
+        AdminModule,
     ],
     controllers: [AppController],
     providers: [AppService],

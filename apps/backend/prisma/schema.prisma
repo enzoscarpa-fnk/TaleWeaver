@@ -6,9 +6,41 @@ datasource db {
   provider = "sqlite"
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sessions  Session[]
+  conversations Conversation[]
+  usageStats UsageStats[]
+
+  @@index([email])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([token])
+}
+
 model Conversation {
   id        String    @id @default(cuid())
   userId    String?
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   title     String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -43,6 +75,7 @@ model Message {
 model UsageStats {
   id            String   @id @default(cuid())
   userId        String?
+  user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   date          DateTime
   model         String
   totalRequests Int      @default(0)

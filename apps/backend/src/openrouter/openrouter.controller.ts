@@ -1,6 +1,8 @@
-import { Controller, Post, Get, Body, Query, ParseDatePipe } from '@nestjs/common';
+import { Controller, Post, Get, Body, Query, ParseDatePipe, UseGuards } from '@nestjs/common';
 import { OpenRouterService } from './openrouter.service';
 import { ChatCompletionDto } from './dto/chat-completion.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AdminGuard } from '../auth/guards/admin.guard';
 
 @Controller('api/chat')
 export class OpenRouterController {
@@ -16,6 +18,7 @@ export class OpenRouterController {
     }
 
     @Get('stats/total')
+    @UseGuards(JwtAuthGuard, AdminGuard)
     async getTotalCost(
         @Query('startDate') startDate?: string,
         @Query('endDate') endDate?: string,
@@ -27,6 +30,7 @@ export class OpenRouterController {
     }
 
     @Get('stats/by-model')
+    @UseGuards(JwtAuthGuard, AdminGuard)
     async getCostByModel(
         @Query('startDate') startDate?: string,
         @Query('endDate') endDate?: string,
@@ -38,6 +42,7 @@ export class OpenRouterController {
     }
 
     @Get('stats/daily')
+    @UseGuards(JwtAuthGuard, AdminGuard)
     async getDailyStats(
         @Query('startDate') startDate?: string,
         @Query('endDate') endDate?: string,

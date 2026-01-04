@@ -1,9 +1,19 @@
 import React, { useState, useMemo } from 'react';
 import { useUsageStats } from '../hooks/useUsageStats';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { AdminPanel } from './AdminPanel';
 
 export const Dashboard: React.FC = () => {
     const [dateRange, setDateRange] = useState<'today' | 'week' | 'month' | 'all'>('month');
+    const [activeTab, setActiveTab] = useState<'stats' | 'users'>('stats');
+    const { logout, user } = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        await logout();
+        navigate('/login');
+    };
 
     const { start, end } = useMemo(() => {
         const endDate = new Date();
@@ -51,20 +61,63 @@ export const Dashboard: React.FC = () => {
             {/* Header */}
             <div className="bg-gray-800 p-4 border-b border-gray-700 flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold">Dashboard des Coûts</h1>
-                    <p className="text-sm text-gray-400">Suivez votre utilisation de l'API OpenRouter</p>
+                    <h1 className="text-2xl font-bold">Panneau d'Administration</h1>
+                    <p className="text-sm text-gray-400">Gérez les statistiques et les utilisateurs</p>
+                    {user && (
+                        <p className="text-xs text-gray-500 mt-1">
+                            Connecté en tant que : {user.email} ({user.role})
+                        </p>
+                    )}
                 </div>
-                <Link
-                    to="/"
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
-                >
-                    <span>💬</span>
-                    Chat
-                </Link>
+                <div className="flex items-center gap-2">
+                    <Link
+                        to="/"
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+                    >
+                        <span>💬</span>
+                        Chat
+                    </Link>
+                    <button
+                        onClick={handleLogout}
+                        className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                    >
+                        Déconnexion
+                    </button>
+                </div>
+            </div>
+
+            {/* Tabs */}
+            <div className="bg-gray-800 border-b border-gray-700 px-6">
+                <div className="flex gap-4">
+                    <button
+                        onClick={() => setActiveTab('stats')}
+                        className={`px-4 py-3 font-medium transition-colors border-b-2 ${
+                            activeTab === 'stats'
+                                ? 'text-blue-400 border-blue-400'
+                                : 'text-gray-400 border-transparent hover:text-gray-300'
+                        }`}
+                    >
+                        📊 Statistiques API
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('users')}
+                        className={`px-4 py-3 font-medium transition-colors border-b-2 ${
+                            activeTab === 'users'
+                                ? 'text-blue-400 border-blue-400'
+                                : 'text-gray-400 border-transparent hover:text-gray-300'
+                        }`}
+                    >
+                        👥 Gestion des Utilisateurs
+                    </button>
+                </div>
             </div>
 
             {/* Content */}
             <div className="p-6">
+                {activeTab === 'users' ? (
+                    <AdminPanel />
+                ) : (
+                    <>
                 {/* Date Range Selector */}
                 <div className="flex gap-2 mb-8">
                     {(['today', 'week', 'month', 'all'] as const).map((range) => (
@@ -196,6 +249,8 @@ export const Dashboard: React.FC = () => {
                         </table>
                     </div>
                 </div>
+                    </>
+                )}
             </div>
         </div>
     );
